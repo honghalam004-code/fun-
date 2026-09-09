@@ -92,9 +92,7 @@ def calculate_percentile():
 # ==========================================
 st.markdown("""
 <style>
-    [data-testid="stSidebar"] {
-        min-width: 320px !important;
-    }
+    [data-testid="stSidebar"] { min-width: 320px !important; }
     [data-testid="stSidebar"] div[role="radiogroup"] label {
         padding: 12px 18px !important;
         font-size: 20px !important;
@@ -102,7 +100,6 @@ st.markdown("""
         border-radius: 10px !important;
         margin-bottom: 8px !important;
         background-color: rgba(255, 255, 255, 0.05);
-        transition: all 0.2s ease;
     }
     .point-badge {
         background: linear-gradient(135deg, #facc15, #eab308);
@@ -119,7 +116,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 🧪 원소 주기율표 데이터 (1~118번 복구)
+# 🧪 원소 주기율표 데이터 (1~118번 전체)
 # ==========================================
 ELEMENTS_DATA = [
     (1, "H", "수소", "기체", "비금속"), (2, "He", "헬륨", "기체", "비활성기체"),
@@ -184,10 +181,13 @@ ELEMENTS_DATA = [
 ]
 
 # ==========================================
-# 🧪 백업 단어 사적 (API 장애 대응용)
+# 🧪 확장 백업 단어 사적 ('조' 등 추가)
 # ==========================================
 BACKUP_DICTIONARY = {
     "자": ["자전거", "자동차", "자연", "자유", "자석", "자라", "자두", "자존심", "자물쇠", "자주색"],
+    "조": ["조개", "조선", "조명", "조각", "조류", "조부모", "조경", "조율사", "조리법", "조약돌"],
+    "주": ["주스", "주택", "주말", "주사위", "주인공", "주방", "주상절리", "주머니"],
+    "지": ["지구", "지도", "지갑", "지하철", "지식", "지혜", "지우개", "지평선"],
     "임": ["임금님", "임산부", "임계점", "임무", "임시계정", "임상시험"],
     "남": ["나무", "남극", "남대문", "남쪽", "남성"],
     "이": ["이발소", "이집트", "이야기", "이불", "이용권", "이사회"],
@@ -370,7 +370,7 @@ def get_bot_response_word(start_chars, used_words, difficulty="보통"):
         except Exception:
             pass
 
-    # 2. 백업 단어 탑재
+    # 2. 백업 단어 탑재 (API 실패 대비)
     for sc in start_chars:
         if sc in BACKUP_DICTIONARY:
             for w in BACKUP_DICTIONARY[sc]:
@@ -566,7 +566,6 @@ elif menu == "👤 내 프로필":
 
     stats = st.session_state.stats
     total, wins, losses = stats["total_games"], stats["wins"], stats["losses"]
-    win_rate = (wins / total * 100) if total > 0 else 0.0
     percentile = calculate_percentile()
 
     st.markdown(f"""
