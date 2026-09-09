@@ -59,7 +59,7 @@ if "data_loaded" not in st.session_state:
     st.session_state.data_loaded = True
 
 # ==========================================
-# 🛡️ 안전한 네이버 API 검색 함수 (JSONDecodeError 방지)
+# 🛡️ 안전한 네이버 API 검색
 # ==========================================
 def safe_naver_search(query):
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
@@ -68,7 +68,7 @@ def safe_naver_search(query):
         res = requests.get(url, headers=headers, timeout=2)
         if res.status_code == 200:
             return res.json()
-    except (requests.exceptions.JSONDecodeError, Exception):
+    except Exception:
         return None
     return None
 
@@ -126,7 +126,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 💥 원소 주기율표 (1~118) 및 대량의 한방단어 대사전
+# 💥 원소 주기율표 (1~118) 및 대량 한방 단어
 # ==========================================
 ELEMENTS_DATA = [
     (1, "H", "수소", "기체", "비금속"), (2, "He", "헬륨", "기체", "비활성기체"),
@@ -190,7 +190,6 @@ ELEMENTS_DATA = [
     (117, "Ts", "테네신", "고체", "할로젠"), (118, "Og", "오가네손", "기체", "비활성기체")
 ]
 
-# 대량의 한방 단어 사전
 MASSIVE_KILLER_DICTIONARY = {
     "륨 계열": ["나트륨", "칼륨", "헬륨", "베릴륨", "바륨", "라듐", "루비듐", "세슘", "이테르븀", "페르븀", "노벨륨", "플레로븀", "리버모륨", "마이트너륨", "다름슈타튬"],
     "늄 계열": ["플루토늄", "우라늄", "악티늄", "넵튜늄", "알루미늄", "지르코늄", "더브늄", "시보귬", "보륨", "하슘", "뢴트게늄", "코페르니슘", "니호늄", "모스코븀"],
@@ -202,6 +201,25 @@ MASSIVE_KILLER_DICTIONARY = {
 }
 
 ALL_KILLER_WORDS = list(set([w for group in MASSIVE_KILLER_DICTIONARY.values() for w in group] + [e[2] for e in ELEMENTS_DATA if e[2].endswith(("륨", "늄", "튬", "슘", "뮴", "븀"))]))
+
+# API 실패 시 끊김 방지용 백업 단어장 (특히 '리/이', '기', '차' 등 자주 끊기는 글자)
+FALLBACK_WORDS = {
+    "리": ["리본", "리듬", "리코더", "리모컨", "리조트", "리갈", "리액션", "리필"],
+    "이": ["이야기", "이발소", "이유", "이불", "이웃", "이메일", "이탈리아", "이동"],
+    "기": ["기차", "기린", "기타", "기와", "기구", "기사", "기름", "기적"],
+    "차": ["차표", "차창", "차나무", "차고지", "차선", "차돌"],
+    "구": ["구름", "구두", "구슬", "구경", "구조대", "구마유시"],
+    "름": ["름봉", "름장"],
+    "바": ["바다", "바나나", "바구니", "바람", "바위", "바질"],
+    "다": ["다람쥐", "다리", "다리미", "다이아몬드", "다큐멘터리"],
+    "자": ["자전거", "자두", "자동차", "자석", "자라", "자존심"],
+    "호": ["호랑이", "호수", "호두", "호박", "호루라기", "호텔"],
+    "장": ["장난감", "장미", "장갑", "장화", "장터"],
+    "사": ["사자", "사과", "사슴", "사탕", "사이다", "사막"],
+    "컴": ["컴퓨터", "컴퍼스", "컴팩트"],
+    "퓨": ["퓨마", "퓨즈", "퓨전"],
+    "터": ["터널", "터틀넥", "터미널"]
+}
 
 # ==========================================
 # 🎮 게임 로직 & 두음법칙
@@ -226,6 +244,7 @@ def get_bot_response_word(start_chars, used_words, difficulty="보통", game_tur
     clean_used = [w.strip() for w in used_words]
     candidates = []
 
+    # 1. 온라인 사전 검색
     for sc in start_chars:
         res_json = safe_naver_search(sc)
         if res_json:
@@ -235,24 +254,35 @@ def get_bot_response_word(start_chars, used_words, difficulty="보통", game_tur
                     if len(w) >= 2 and w[0] in start_chars and w not in clean_used:
                         candidates.append(w)
 
+    # 2. 검색 실패 시 백업 단어장 활용 (절대 바로 끊기지 않도록 방어)
+    for sc in start_chars:
+        if sc in FALLBACK_WORDS:
+            for fw in FALLBACK_WORDS[sc]:
+                if fw not in clean_used:
+                    candidates.append(fw)
+
     candidates = list(set(candidates))
     if not candidates: return None
 
     killer_endings = ("륨", "늄", "튬", "슘", "뮴", "븀", "슭", "녘")
     safe_candidates = [w for w in candidates if w not in ALL_KILLER_WORDS and not w.endswith(killer_endings)]
 
+    # 3. 최소 10턴(게임 진행 10회 미만) 동안은 무조건 티키타카용 안전한 단어만 제출
+    if game_turn < 10:
+        if safe_candidates:
+            return random.choice(safe_candidates)
+        return random.choice(candidates)
+
+    # 10턴 이후부터 난이도별 로직 적용
     if difficulty == "어려움":
         killers = [w for w in candidates if w in ALL_KILLER_WORDS]
-        if killers and random.random() < 0.3:
+        if killers and random.random() < 0.4:
             return random.choice(killers)
         return random.choice(safe_candidates) if safe_candidates else random.choice(candidates)
 
     elif difficulty == "매우 어려움":
-        if game_turn < 3:
-            return random.choice(safe_candidates) if safe_candidates else random.choice(candidates)
-        else:
-            killers = [w for w in candidates if w in ALL_KILLER_WORDS or w.endswith(killer_endings)]
-            return random.choice(killers) if killers else (random.choice(safe_candidates) if safe_candidates else random.choice(candidates))
+        killers = [w for w in candidates if w in ALL_KILLER_WORDS or w.endswith(killer_endings)]
+        return random.choice(killers) if killers else (random.choice(safe_candidates) if safe_candidates else random.choice(candidates))
 
     return random.choice(safe_candidates) if safe_candidates else random.choice(candidates)
 
@@ -292,6 +322,9 @@ menu = st.sidebar.radio("메뉴 이동", [
 if menu == "💬 끝말잇기 톡":
     st.title("💬 끝말잇기 톡")
     difficulty = st.sidebar.select_slider("⚙️ 난이도 선택:", options=["쉬움", "보통", "어려움", "매우 어려움"], value="보통")
+    
+    # 턴수 표시
+    st.caption(f"🔄 현재 연속 티키타카: **{st.session_state.game_turn}턴** (10턴까지는 AI가 안전하게 이어줍니다!)")
 
     for msg in st.session_state.chat_history:
         avatar = st.session_state.equipped_avatar.split()[0] if msg["role"] == "user" else "🤖"
@@ -345,7 +378,7 @@ if menu == "💬 끝말잇기 톡":
         st.button("🔄 새 게임 시작", on_click=reset_game)
 
 # ==========================================
-# 2. 🔍 네이버 사전 검색 (에러 방지 안전 적용)
+# 2. 🔍 네이버 사전 검색
 # ==========================================
 elif menu == "🔍 네이버 사전 검색":
     st.title("🔍 네이버 사전 실시간 검색")
@@ -431,12 +464,11 @@ elif menu == "🛒 상점 (20종 세트)":
                                 st.error("포인트 부족!")
 
 # ==========================================
-# 5. 👤 내 프로필 (이름 직접 변경 기능 추가)
+# 5. 👤 내 프로필 (이름 변경 기능)
 # ==========================================
 elif menu == "👤 내 프로필 (이름 변경)":
     st.title("👤 플레이어 프로필")
     
-    # ✏️ 이름 변경 입력칸 추가
     st.subheader("✏️ 닉네임 수정")
     new_username = st.text_input("새로운 닉네임을 입력하세요:", value=st.session_state.user_name)
     if st.button("💾 닉네임 저장"):
