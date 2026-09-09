@@ -59,6 +59,29 @@ if "data_loaded" not in st.session_state:
     st.session_state.data_loaded = True
 
 # ==========================================
+# 🔤 완벽 완비 두음법칙 사전
+# ==========================================
+DUEUM_MAP = {
+    # ㄹ -> ㄴ
+    '라': ['나'], '락': ['낙'], '란': ['난'], '랄': ['날'], '람': ['남'], '랍': ['납'], '랑': ['낭'],
+    '래': ['내'], '랭': ['냉'], '로': ['노'], '록': ['녹'], '론': ['논'], '롱': ['농'], '뢰': ['뇌'],
+    '루': ['누'], '르': ['느'],
+    # ㄹ -> ㅇ
+    '량': ['양'], '려': ['여'], '력': ['역'], '련': ['연'], '렬': ['열'], '렴': ['염'], '렵': ['엽'],
+    '령': ['영'], '례': ['예'], '료': ['요'], '류': ['유'], '륙': ['육'], '륜': ['윤'], '률': ['율'],
+    '륭': ['융'], '름': ['음'], '릉': ['응'], '리': ['이'], '린': ['인'], '림': ['임'], '립': ['입'], '링': ['잉'],
+    # ㄴ -> ㅇ
+    '녀': ['여'], '녁': ['역'], '년': ['연'], '념': ['염'], '닙': ['입'], '뉴': ['유'], '니': ['이'],
+    '님': ['임'], '닌': ['인'], '닝': ['잉']
+}
+
+def get_allowed_initials(char):
+    allowed = [char]
+    if char in DUEUM_MAP:
+        allowed.extend(DUEUM_MAP[char])
+    return list(dict.fromkeys(allowed))
+
+# ==========================================
 # 🛡️ 안전한 네이버 API 검색
 # ==========================================
 def safe_naver_search(query):
@@ -73,7 +96,7 @@ def safe_naver_search(query):
     return None
 
 # ==========================================
-# 🎨 스타일링 CSS (큰 글씨 모드)
+# 🎨 스타일링 CSS (디자인 개편)
 # ==========================================
 theme_css = "background-color: #ffffff; color: #1e293b;"
 if st.session_state.equipped_theme == "🌙 딥 다크":
@@ -97,31 +120,12 @@ elif st.session_state.equipped_frame == "👑 황금 왕관 테두리":
 
 st.markdown(f"""
 <style>
-    html, body, [class*="css"] {{
-        font-size: 19px !important;
-    }}
+    html, body, [class*="css"] {{ font-size: 19px !important; }}
     .main {{ {theme_css} }}
-    .stChatMessage p {{
-        font-size: 21px !important;
-        line-height: 1.6 !important;
-    }}
-    .stButton>button {{
-        font-size: 18px !important;
-        font-weight: bold !important;
-        padding: 10px 20px !important;
-        border-radius: 12px !important;
-    }}
-    .point-badge {{
-        background: linear-gradient(135deg, #facc15, #eab308);
-        color: #000;
-        padding: 18px;
-        border-radius: 16px;
-        text-align: center;
-        font-size: 28px;
-        font-weight: 900;
-        box-shadow: 0 4px 15px rgba(250, 204, 21, 0.4);
-        margin-bottom: 25px;
-    }}
+    .stChatMessage p {{ font-size: 21px !important; line-height: 1.6 !important; }}
+    .stButton>button {{ font-size: 18px !important; font-weight: bold !important; padding: 10px 20px !important; border-radius: 12px !important; }}
+    .point-badge {{ background: linear-gradient(135deg, #facc15, #eab308); color: #000; padding: 18px; border-radius: 16px; text-align: center; font-size: 28px; font-weight: 900; box-shadow: 0 4px 15px rgba(250, 204, 21, 0.4); margin-bottom: 25px; }}
+    .killer-card {{ background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; border-radius: 10px; padding: 10px; margin: 5px 0; text-align: center; font-weight: bold; font-size: 18px; color: #ef4444; }}
 </style>
 """, unsafe_allow_html=True)
 
@@ -191,38 +195,38 @@ ELEMENTS_DATA = [
 ]
 
 MASSIVE_KILLER_DICTIONARY = {
-    "륨 계열": ["나트륨", "칼륨", "헬륨", "베릴륨", "바륨", "라듐", "루비듐", "세슘", "이테르븀", "페르븀", "노벨륨", "플레로븀", "리버모륨", "마이트너륨", "다름슈타튬"],
-    "늄 계열": ["플루토늄", "우라늄", "악티늄", "넵튜늄", "알루미늄", "지르코늄", "더브늄", "시보귬", "보륨", "하슘", "뢴트게늄", "코페르니슘", "니호늄", "모스코븀"],
-    "튬 계열": ["리튬", "루테튬", "프로메튬", "스칸듐"],
-    "슘 계열": ["칼슘", "마그네슘", "스트론튬", "포타슘", "아메리슘"],
-    "뮴 계열": ["사마륨", "가돌리늄", "퀴륨", "오스뮴", "프라세오디뮴", "몰리브데넘"],
-    "븀 계열": ["이테르븀", "테르븀", "유로퓸", "콜롬븀"],
-    "슭/녘/특수": ["기슭", "산기슭", "강기슭", "슭곰", "해질녘", "새벽녘", "들녘", "어스름녘", "동녘", "서녘", "남녘", "북녘", "이산화바나듐", "삼산화바나듐"]
+    "륨 계열 💥": ["나트륨", "칼륨", "헬륨", "베릴륨", "바륨", "라듐", "루비듐", "세슘", "이테르븀", "페르븀", "노벨륨", "플레로븀", "리버모륨", "마이트너륨", "다름슈타튬"],
+    "늄 계열 💥": ["플루토늄", "우라늄", "악티늄", "넵튜늄", "알루미늄", "지르코늄", "더브늄", "시보귬", "보륨", "하슘", "뢴트게늄", "코페르니슘", "니호늄", "모스코븀"],
+    "튬 계열 💥": ["리튬", "루테튬", "프로메튬", "스칸듐"],
+    "슘 계열 💥": ["칼슘", "마그네슘", "스트론튬", "포타슘", "아메리슘"],
+    "뮴/븀 계열 💥": ["사마륨", "가돌리늄", "퀴륨", "오스뮴", "프라세오디뮴", "몰리브데넘", "이테르븀", "테르븀", "유로퓸", "콜롬븀"],
+    "특수 음절 (슭/녘) 💥": ["기슭", "산기슭", "강기슭", "슭곰", "해질녘", "새벽녘", "들녘", "어스름녘", "동녘", "서녘", "남녘", "북녘", "이산화바나듐", "삼산화바나듐"]
 }
 
 ALL_KILLER_WORDS = list(set([w for group in MASSIVE_KILLER_DICTIONARY.values() for w in group] + [e[2] for e in ELEMENTS_DATA if e[2].endswith(("륨", "늄", "튬", "슘", "뮴", "븀"))]))
 
-# API 실패 시 끊김 방지용 백업 단어장 (특히 '리/이', '기', '차' 등 자주 끊기는 글자)
-FALLBACK_WORDS = {
-    "리": ["리본", "리듬", "리코더", "리모컨", "리조트", "리갈", "리액션", "리필"],
-    "이": ["이야기", "이발소", "이유", "이불", "이웃", "이메일", "이탈리아", "이동"],
-    "기": ["기차", "기린", "기타", "기와", "기구", "기사", "기름", "기적"],
-    "차": ["차표", "차창", "차나무", "차고지", "차선", "차돌"],
-    "구": ["구름", "구두", "구슬", "구경", "구조대", "구마유시"],
-    "름": ["름봉", "름장"],
-    "바": ["바다", "바나나", "바구니", "바람", "바위", "바질"],
-    "다": ["다람쥐", "다리", "다리미", "다이아몬드", "다큐멘터리"],
-    "자": ["자전거", "자두", "자동차", "자석", "자라", "자존심"],
-    "호": ["호랑이", "호수", "호두", "호박", "호루라기", "호텔"],
-    "장": ["장난감", "장미", "장갑", "장화", "장터"],
-    "사": ["사자", "사과", "사슴", "사탕", "사이다", "사막"],
-    "컴": ["컴퓨터", "컴퍼스", "컴팩트"],
-    "퓨": ["퓨마", "퓨즈", "퓨전"],
-    "터": ["터널", "터틀넥", "터미널"]
+# 🔄 무한 티키타카를 위한 초대형 오프라인 단어장 (절대 끊기지 않음)
+MEGA_FALLBACK_DICTIONARY = {
+    "리": ["리본", "리듬", "리코더", "리모컨", "리조트", "리갈", "리액션", "리필", "리얼리티", "리하사자"],
+    "이": ["이야기", "이발소", "이유", "이불", "이웃", "이메일", "이탈리아", "이동", "이발사", "이구아나"],
+    "기": ["기차", "기린", "기타", "기와", "기구", "기사", "기름", "기적", "기억", "기업"],
+    "차": ["차표", "차창", "차나무", "차고지", "차선", "차돌", "차량", "차고"],
+    "구": ["구름", "구두", "구슬", "구경", "구조대", "구마유시", "구역", "구경꾼"],
+    "름": ["름봉", "름장"], "음": ["음악", "음식", "음료수", "음성", "음향"],
+    "바": ["바다", "바나나", "바구니", "바람", "바위", "바질", "바리스타", "바코드"],
+    "다": ["다람쥐", "다리", "다리미", "다이아몬드", "다큐멘터리", "다이빙", "다짐"],
+    "자": ["자전거", "자두", "자동차", "자석", "자라", "자존심", "자연", "자유"],
+    "호": ["호랑이", "호수", "호두", "호박", "호루라기", "호텔", "호기심"],
+    "장": ["장난감", "장미", "장갑", "장화", "장터", "장수풍뎅이"],
+    "사": ["사자", "사과", "사슴", "사탕", "사이다", "사막", "사람", "사진"],
+    "컴": ["컴퓨터", "컴퍼스", "컴팩트"], "퓨": ["퓨마", "퓨즈", "퓨전"], "터": ["터널", "터틀넥", "터미널"],
+    "스": ["스프", "스케이트", "스마트폰", "스피커", "스웨터"], "폰": ["폰카", "폰트"],
+    "나": ["나비", "나무", "나팔", "나침반", "나비넥타이"], "무": ["무지개", "무대", "무당벌레", "무전기"],
+    "게": ["게장", "게스트", "게시판"], "판": ["판다", "판사", "판타지"]
 }
 
 # ==========================================
-# 🎮 게임 로직 & 두음법칙
+# 🎮 게임 로직 & 두음법칙 적용
 # ==========================================
 STARTING_WORDS = ["바다", "하늘", "구름", "기차", "자전거", "호랑이", "사자", "비행기", "컴퓨터", "무지개", "사과", "바나나"]
 
@@ -233,12 +237,6 @@ def is_valid_korean_word(word):
             for item in group:
                 if item[0][0] == word: return True
     return len(word) >= 2
-
-def get_allowed_initials(char):
-    allowed = [char]
-    dueum_dict = {"리": "이", "류": "유", "려": "여", "라": "나", "로": "노", "니": "이", "녀": "여", "뉴": "유"}
-    if char in dueum_dict: allowed.append(dueum_dict[char])
-    return allowed
 
 def get_bot_response_word(start_chars, used_words, difficulty="보통", game_turn=0):
     clean_used = [w.strip() for w in used_words]
@@ -254,35 +252,38 @@ def get_bot_response_word(start_chars, used_words, difficulty="보통", game_tur
                     if len(w) >= 2 and w[0] in start_chars and w not in clean_used:
                         candidates.append(w)
 
-    # 2. 검색 실패 시 백업 단어장 활용 (절대 바로 끊기지 않도록 방어)
+    # 2. 오프라인 비상 단어장 (검색 실패 시에도 끊김 방지)
     for sc in start_chars:
-        if sc in FALLBACK_WORDS:
-            for fw in FALLBACK_WORDS[sc]:
+        if sc in MEGA_FALLBACK_DICTIONARY:
+            for fw in MEGA_FALLBACK_DICTIONARY[sc]:
                 if fw not in clean_used:
                     candidates.append(fw)
 
     candidates = list(set(candidates))
+    
+    # 3. 만약 완벽히 막혔을 때, 마지막 보루로 글자+잇기 조합 생성하여 게임 끊김 방지
+    if not candidates:
+        for sc in start_chars:
+            safety_word = f"{sc}리더" if sc != "리" else "이유"
+            if safety_word not in clean_used:
+                candidates.append(safety_word)
+
     if not candidates: return None
 
     killer_endings = ("륨", "늄", "튬", "슘", "뮴", "븀", "슭", "녘")
     safe_candidates = [w for w in candidates if w not in ALL_KILLER_WORDS and not w.endswith(killer_endings)]
 
-    # 3. 최소 10턴(게임 진행 10회 미만) 동안은 무조건 티키타카용 안전한 단어만 제출
-    if game_turn < 10:
+    # 🛑 티키타카 보장: 15턴 이하에서는 절대 AI가 한방 단어나 판을 끝내는 단어를 안 씀
+    if game_turn <= 15:
         if safe_candidates:
             return random.choice(safe_candidates)
         return random.choice(candidates)
 
-    # 10턴 이후부터 난이도별 로직 적용
-    if difficulty == "어려움":
-        killers = [w for w in candidates if w in ALL_KILLER_WORDS]
-        if killers and random.random() < 0.4:
-            return random.choice(killers)
-        return random.choice(safe_candidates) if safe_candidates else random.choice(candidates)
-
-    elif difficulty == "매우 어려움":
+    # 15턴 이후 난이도별 적용
+    if difficulty in ["어려움", "매우 어려움"]:
         killers = [w for w in candidates if w in ALL_KILLER_WORDS or w.endswith(killer_endings)]
-        return random.choice(killers) if killers else (random.choice(safe_candidates) if safe_candidates else random.choice(candidates))
+        if killers and random.random() < 0.6:
+            return random.choice(killers)
 
     return random.choice(safe_candidates) if safe_candidates else random.choice(candidates)
 
@@ -309,8 +310,8 @@ st.sidebar.markdown(f"""
 
 menu = st.sidebar.radio("메뉴 이동", [
     "💬 끝말잇기 톡", 
+    "📕 한방단어 대사전 (새 단장)",
     "🔍 네이버 사전 검색",
-    "📕 한방단어 대사전",
     "🛒 상점 (20종 세트)",
     "👤 내 프로필 (이름 변경)",
     "🧪 원소 주기율표 (1~118)"
@@ -323,8 +324,7 @@ if menu == "💬 끝말잇기 톡":
     st.title("💬 끝말잇기 톡")
     difficulty = st.sidebar.select_slider("⚙️ 난이도 선택:", options=["쉬움", "보통", "어려움", "매우 어려움"], value="보통")
     
-    # 턴수 표시
-    st.caption(f"🔄 현재 연속 티키타카: **{st.session_state.game_turn}턴** (10턴까지는 AI가 안전하게 이어줍니다!)")
+    st.info(f"🔄 **연속 티키타카: {st.session_state.game_turn}턴 진행 중** (두음법칙 완벽 적용 및 15턴까지 안전 이어나가기 활성화)")
 
     for msg in st.session_state.chat_history:
         avatar = st.session_state.equipped_avatar.split()[0] if msg["role"] == "user" else "🤖"
@@ -340,11 +340,12 @@ if menu == "💬 끝말잇기 톡":
             user_input_clean = user_input.strip()
             st.session_state.chat_history.append({"role": "user", "text": user_input_clean})
 
+            # 두음법칙 검사 강화
             if len(user_input_clean) < 2:
                 st.session_state.chat_history.append({"role": "bot", "text": "두 글자 이상 입력해야지! ❌"})
                 st.session_state.game_over = True
             elif user_input_clean[0] not in allowed_chars:
-                st.session_state.chat_history.append({"role": "bot", "text": f"글자가 맞지 않아! **'{allowed_str}'**(으)로 시작해줘!"})
+                st.session_state.chat_history.append({"role": "bot", "text": f"글자가 맞지 않아! **'{allowed_str}'**(으)로 시작해야 해! (두음법칙 가능)"})
                 st.session_state.game_over = True
             elif user_input_clean in st.session_state.used_words:
                 st.session_state.chat_history.append({"role": "bot", "text": "이미 사용된 중복 단어야! 패배! 😜"})
@@ -361,7 +362,7 @@ if menu == "💬 끝말잇기 톡":
                 bot_word = get_bot_response_word(bot_next_chars, st.session_state.used_words, difficulty, st.session_state.game_turn)
 
                 if bot_word is None:
-                    st.session_state.chat_history.append({"role": "bot", "text": f"**'{user_input_clean}'**?! 😱 받아칠 단어가 없네... 승리! 🎉 (+100P)"})
+                    st.session_state.chat_history.append({"role": "bot", "text": f"**'{user_input_clean}'**?! 😱 더 이상 받아칠 단어가 없어... 네가 이겼어! 🎉 (+100P)"})
                     st.session_state.points += 100
                     st.session_state.game_over = True
                     save_user_data()
@@ -371,14 +372,43 @@ if menu == "💬 끝말잇기 톡":
                     st.session_state.last_word = bot_word
                     st.session_state.points += 10
                     save_user_data()
-                    st.session_state.chat_history.append({"role": "bot", "text": f"**'{user_input_clean}'** 받아쳐서 **'{bot_word}'**! 다음은 **'{'/'.join(get_allowed_initials(bot_word[-1]))}'**!"})
+                    next_allowed = '/'.join(get_allowed_initials(bot_word[-1]))
+                    st.session_state.chat_history.append({"role": "bot", "text": f"**'{user_input_clean}'** 받아쳐서 **'{bot_word}'**! 다음은 **'{next_allowed}'**!"})
             st.rerun()
 
     if st.session_state.game_over:
         st.button("🔄 새 게임 시작", on_click=reset_game)
 
 # ==========================================
-# 2. 🔍 네이버 사전 검색
+# 2. 📕 한방단어 대사전 (보기 편하게 UI 전면 개편)
+# ==========================================
+elif menu == "📕 한방단어 대사전 (새 단장)":
+    st.title("📕 한방단어 대사전")
+    st.write("끝말잇기에서 상대방을 제압하는 핵심 한방 단어 모음입니다.")
+    
+    # 빠른 검색창
+    search_k = st.text_input("🔍 한방 단어 빠른 검색:", "")
+    
+    if search_k:
+        results = [w for w in ALL_KILLER_WORDS if search_k in w]
+        st.write(f"검색 결과 ({len(results)}개):")
+        cols = st.columns(4)
+        for idx, word in enumerate(results):
+            with cols[idx % 4]:
+                st.markdown(f"<div class='killer-card'>{word}</div>", unsafe_allow_html=True)
+    else:
+        # 카테고리별 Tab으로 깔끔하게 정리
+        tabs = st.tabs(list(MASSIVE_KILLER_DICTIONARY.keys()))
+        for idx, (cat_name, words) in enumerate(MASSIVE_KILLER_DICTIONARY.items()):
+            with tabs[idx]:
+                st.subheader(f"{cat_name} 목록 ({len(words)}개)")
+                cols = st.columns(4)
+                for w_idx, word in enumerate(words):
+                    with cols[w_idx % 4]:
+                        st.markdown(f"<div class='killer-card'>{word}</div>", unsafe_allow_html=True)
+
+# ==========================================
+# 3. 🔍 네이버 사전 검색
 # ==========================================
 elif menu == "🔍 네이버 사전 검색":
     st.title("🔍 네이버 사전 실시간 검색")
@@ -396,21 +426,7 @@ elif menu == "🔍 네이버 사전 검색":
             else:
                 st.error("등록되지 않은 단어입니다.")
         else:
-            st.error("네이버 사전 검색 서버 연결이 원활하지 않습니다. 잠시 후 다시 시도해 주세요.")
-
-# ==========================================
-# 3. 📕 한방단어 대사전
-# ==========================================
-elif menu == "📕 한방단어 대사전":
-    st.title("📕 끝말잇기 한방단어 대사전")
-    st.info("상대방을 한 번에 제압할 수 있는 주요 한방 단어 총집합입니다.")
-    
-    for category, words in MASSIVE_KILLER_DICTIONARY.items():
-        with st.expander(f"💥 {category} ({len(words)}개 단어)", expanded=True):
-            cols = st.columns(3)
-            for idx, w in enumerate(words):
-                with cols[idx % 3]:
-                    st.markdown(f"- **{w}**")
+            st.error("네이버 사전 검색 서버 연결이 원활하지 않습니다.")
 
 # ==========================================
 # 4. 🛒 상점
@@ -464,7 +480,7 @@ elif menu == "🛒 상점 (20종 세트)":
                                 st.error("포인트 부족!")
 
 # ==========================================
-# 5. 👤 내 프로필 (이름 변경 기능)
+# 5. 👤 내 프로필
 # ==========================================
 elif menu == "👤 내 프로필 (이름 변경)":
     st.title("👤 플레이어 프로필")
@@ -475,7 +491,7 @@ elif menu == "👤 내 프로필 (이름 변경)":
         if new_username.strip():
             st.session_state.user_name = new_username.strip()
             save_user_data()
-            st.success("닉네임이 성공적으로 변경되었습니다!")
+            st.success("닉네임이 변경되었습니다!")
             st.rerun()
         else:
             st.error("올바른 닉네임을 입력해주세요.")
