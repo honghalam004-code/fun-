@@ -59,7 +59,21 @@ if "data_loaded" not in st.session_state:
     st.session_state.data_loaded = True
 
 # ==========================================
-# 🎨 폰트 확대를 포함한 동적 CSS 스타일링
+# 🛡️ 안전한 네이버 API 검색 함수 (JSONDecodeError 방지)
+# ==========================================
+def safe_naver_search(query):
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+    url = f"https://dict.naver.com/api/search/autocomplete?query={query}&st=11111"
+    try:
+        res = requests.get(url, headers=headers, timeout=2)
+        if res.status_code == 200:
+            return res.json()
+    except (requests.exceptions.JSONDecodeError, Exception):
+        return None
+    return None
+
+# ==========================================
+# 🎨 스타일링 CSS (큰 글씨 모드)
 # ==========================================
 theme_css = "background-color: #ffffff; color: #1e293b;"
 if st.session_state.equipped_theme == "🌙 딥 다크":
@@ -81,29 +95,22 @@ elif st.session_state.equipped_frame == "🌟 은하수 테두리":
 elif st.session_state.equipped_frame == "👑 황금 왕관 테두리":
     frame_border = "4px solid #eab308"
 
-# 폰트 크기 대폭 확대 CSS 적용
 st.markdown(f"""
 <style>
-    html, body, [class*="css"]  {{
+    html, body, [class*="css"] {{
         font-size: 19px !important;
     }}
     .main {{ {theme_css} }}
-    
-    /* 채팅 메시지 글씨 확대 */
     .stChatMessage p {{
         font-size: 21px !important;
         line-height: 1.6 !important;
     }}
-    
-    /* 버튼 글씨 및 크기 확대 */
     .stButton>button {{
         font-size: 18px !important;
         font-weight: bold !important;
         padding: 10px 20px !important;
         border-radius: 12px !important;
     }}
-
-    /* 사이드바 포인트 박스 디자인 */
     .point-badge {{
         background: linear-gradient(135deg, #facc15, #eab308);
         color: #000;
@@ -119,7 +126,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 💥 확장된 한방 단어 데이터셋 & 원소 주기율표 (1~118)
+# 💥 원소 주기율표 (1~118) 및 대량의 한방단어 대사전
 # ==========================================
 ELEMENTS_DATA = [
     (1, "H", "수소", "기체", "비금속"), (2, "He", "헬륨", "기체", "비활성기체"),
@@ -183,17 +190,18 @@ ELEMENTS_DATA = [
     (117, "Ts", "테네신", "고체", "할로젠"), (118, "Og", "오가네손", "기체", "비활성기체")
 ]
 
-# 원소 이름 외의 대표적인 한방단어 대량 데이터
-EXTRA_KILLER_WORDS = [
-    "기슭", "슭곰", "해질녘", "새벽녘", "들녘", "어스름녘", "북녘", "남녘", "동녘", "서녘",
-    "이산화바나듐", "삼산화바나듐", "소듐", "포타슘", "지르코늄", "프라세오디뮴", "루테튬", 
-    "라듐", "우라늄", "플루토늄", "아인슈타이늄", "캘리포늄", "퀴륨", "버클륨", "페르븀", 
-    "노벨륨", "멘델레븀", "로렌슘", "더브늄", "시보귬", "보륨", "하슘", "마이트너륨",
-    "다름슈타튬", "뢴트게늄", "코페르니슘", "니호늄", "플레로븀", "모스코븀", "리버모륨"
-]
+# 대량의 한방 단어 사전
+MASSIVE_KILLER_DICTIONARY = {
+    "륨 계열": ["나트륨", "칼륨", "헬륨", "베릴륨", "바륨", "라듐", "루비듐", "세슘", "이테르븀", "페르븀", "노벨륨", "플레로븀", "리버모륨", "마이트너륨", "다름슈타튬"],
+    "늄 계열": ["플루토늄", "우라늄", "악티늄", "넵튜늄", "알루미늄", "지르코늄", "더브늄", "시보귬", "보륨", "하슘", "뢴트게늄", "코페르니슘", "니호늄", "모스코븀"],
+    "튬 계열": ["리튬", "루테튬", "프로메튬", "스칸듐"],
+    "슘 계열": ["칼슘", "마그네슘", "스트론튬", "포타슘", "아메리슘"],
+    "뮴 계열": ["사마륨", "가돌리늄", "퀴륨", "오스뮴", "프라세오디뮴", "몰리브데넘"],
+    "븀 계열": ["이테르븀", "테르븀", "유로퓸", "콜롬븀"],
+    "슭/녘/특수": ["기슭", "산기슭", "강기슭", "슭곰", "해질녘", "새벽녘", "들녘", "어스름녘", "동녘", "서녘", "남녘", "북녘", "이산화바나듐", "삼산화바나듐"]
+}
 
-# 원소표 기반 '륨, 늄, 튬, 슘, 뮴, 븀' 끝 단어 자동 추출 및 병합
-ALL_KILLER_WORDS = list(set([e[2] for e in ELEMENTS_DATA if e[2].endswith(("륨", "늄", "튬", "슘", "뮴", "븀"))] + EXTRA_KILLER_WORDS))
+ALL_KILLER_WORDS = list(set([w for group in MASSIVE_KILLER_DICTIONARY.values() for w in group] + [e[2] for e in ELEMENTS_DATA if e[2].endswith(("륨", "늄", "튬", "슘", "뮴", "븀"))]))
 
 # ==========================================
 # 🎮 게임 로직 & 두음법칙
@@ -201,15 +209,11 @@ ALL_KILLER_WORDS = list(set([e[2] for e in ELEMENTS_DATA if e[2].endswith(("륨"
 STARTING_WORDS = ["바다", "하늘", "구름", "기차", "자전거", "호랑이", "사자", "비행기", "컴퓨터", "무지개", "사과", "바나나"]
 
 def is_valid_korean_word(word):
-    headers = {"User-Agent": "Mozilla/5.0"}
-    url = f"https://dict.naver.com/api/search/autocomplete?query={word}&st=11111"
-    try:
-        res = requests.get(url, headers=headers, timeout=2)
-        if res.status_code == 200:
-            for group in res.json().get("items", []):
-                for item in group:
-                    if item[0][0] == word: return True
-    except Exception: pass
+    res_json = safe_naver_search(word)
+    if res_json:
+        for group in res_json.get("items", []):
+            for item in group:
+                if item[0][0] == word: return True
     return len(word) >= 2
 
 def get_allowed_initials(char):
@@ -221,18 +225,15 @@ def get_allowed_initials(char):
 def get_bot_response_word(start_chars, used_words, difficulty="보통", game_turn=0):
     clean_used = [w.strip() for w in used_words]
     candidates = []
-    headers = {"User-Agent": "Mozilla/5.0"}
 
     for sc in start_chars:
-        try:
-            res = requests.get(f"https://dict.naver.com/api/search/autocomplete?query={sc}&st=11111", headers=headers, timeout=2)
-            if res.status_code == 200:
-                for group in res.json().get("items", []):
-                    for item in group:
-                        w = item[0][0].strip()
-                        if len(w) >= 2 and w[0] in start_chars and w not in clean_used:
-                            candidates.append(w)
-        except Exception: pass
+        res_json = safe_naver_search(sc)
+        if res_json:
+            for group in res_json.get("items", []):
+                for item in group:
+                    w = item[0][0].strip()
+                    if len(w) >= 2 and w[0] in start_chars and w not in clean_used:
+                        candidates.append(w)
 
     candidates = list(set(candidates))
     if not candidates: return None
@@ -247,7 +248,7 @@ def get_bot_response_word(start_chars, used_words, difficulty="보통", game_tur
         return random.choice(safe_candidates) if safe_candidates else random.choice(candidates)
 
     elif difficulty == "매우 어려움":
-        if game_turn < 3: # 초반에는 티키타카 유지
+        if game_turn < 3:
             return random.choice(safe_candidates) if safe_candidates else random.choice(candidates)
         else:
             killers = [w for w in candidates if w in ALL_KILLER_WORDS or w.endswith(killer_endings)]
@@ -279,8 +280,9 @@ st.sidebar.markdown(f"""
 menu = st.sidebar.radio("메뉴 이동", [
     "💬 끝말잇기 톡", 
     "🔍 네이버 사전 검색",
-    "🛒 상점 (총 20종 풀 세트)",
-    "👤 내 프로필",
+    "📕 한방단어 대사전",
+    "🛒 상점 (20종 세트)",
+    "👤 내 프로필 (이름 변경)",
     "🧪 원소 주기율표 (1~118)"
 ])
 
@@ -343,28 +345,44 @@ if menu == "💬 끝말잇기 톡":
         st.button("🔄 새 게임 시작", on_click=reset_game)
 
 # ==========================================
-# 2. 🔍 네이버 사전 검색
+# 2. 🔍 네이버 사전 검색 (에러 방지 안전 적용)
 # ==========================================
 elif menu == "🔍 네이버 사전 검색":
     st.title("🔍 네이버 사전 실시간 검색")
     search_q = st.text_input("검색할 단어 입력:", "")
     if search_q:
-        headers = {"User-Agent": "Mozilla/5.0"}
-        res = requests.get(f"https://dict.naver.com/api/search/autocomplete?query={search_q}&st=11111", headers=headers)
-        if res.status_code == 200:
-            items = res.json().get("items", [])
+        res_json = safe_naver_search(search_q)
+        if res_json:
+            items = res_json.get("items", [])
             found = [item[0][0] for group in items for item in group]
             if found:
                 st.success(f"검색 결과 ({len(found)}개):")
                 for w in found:
                     tag = " 💥 [한방 단어]" if w in ALL_KILLER_WORDS or w.endswith(("륨", "늄", "튬", "슘", "뮴", "븀", "슭", "녘")) else ""
                     st.write(f"- **{w}**{tag}")
-            else: st.error("등록되지 않은 단어입니다.")
+            else:
+                st.error("등록되지 않은 단어입니다.")
+        else:
+            st.error("네이버 사전 검색 서버 연결이 원활하지 않습니다. 잠시 후 다시 시도해 주세요.")
 
 # ==========================================
-# 3. 🛒 상점 (20개 아이템 복원)
+# 3. 📕 한방단어 대사전
 # ==========================================
-elif menu == "🛒 상점 (총 20종 풀 세트)":
+elif menu == "📕 한방단어 대사전":
+    st.title("📕 끝말잇기 한방단어 대사전")
+    st.info("상대방을 한 번에 제압할 수 있는 주요 한방 단어 총집합입니다.")
+    
+    for category, words in MASSIVE_KILLER_DICTIONARY.items():
+        with st.expander(f"💥 {category} ({len(words)}개 단어)", expanded=True):
+            cols = st.columns(3)
+            for idx, w in enumerate(words):
+                with cols[idx % 3]:
+                    st.markdown(f"- **{w}**")
+
+# ==========================================
+# 4. 🛒 상점
+# ==========================================
+elif menu == "🛒 상점 (20종 세트)":
     st.title("🛒 아이템 상점")
     
     tab1, tab2, tab3, tab4 = st.tabs(["🏷️ 칭호 (5종)", "👤 아바타 (5종)", "🖼️ 프레임 (5종)", "🎨 테마 (5종)"])
@@ -413,10 +431,24 @@ elif menu == "🛒 상점 (총 20종 풀 세트)":
                                 st.error("포인트 부족!")
 
 # ==========================================
-# 4. 👤 내 프로필
+# 5. 👤 내 프로필 (이름 직접 변경 기능 추가)
 # ==========================================
-elif menu == "👤 내 프로필":
+elif menu == "👤 내 프로필 (이름 변경)":
     st.title("👤 플레이어 프로필")
+    
+    # ✏️ 이름 변경 입력칸 추가
+    st.subheader("✏️ 닉네임 수정")
+    new_username = st.text_input("새로운 닉네임을 입력하세요:", value=st.session_state.user_name)
+    if st.button("💾 닉네임 저장"):
+        if new_username.strip():
+            st.session_state.user_name = new_username.strip()
+            save_user_data()
+            st.success("닉네임이 성공적으로 변경되었습니다!")
+            st.rerun()
+        else:
+            st.error("올바른 닉네임을 입력해주세요.")
+
+    st.markdown("---")
     st.markdown(f"""
     <div style="padding: 30px; border-radius: 20px; border: {frame_border}; text-align: center; margin-top: 15px;">
         <div style="font-size: 70px;">{st.session_state.equipped_avatar.split()[0]}</div>
@@ -428,7 +460,7 @@ elif menu == "👤 내 프로필":
     """, unsafe_allow_html=True)
 
 # ==========================================
-# 5. 🧪 원소 주기율표 (1~118)
+# 6. 🧪 원소 주기율표 (1~118)
 # ==========================================
 elif menu == "🧪 원소 주기율표 (1~118)":
     st.title("🧪 원소 주기율표 (1~118)")
