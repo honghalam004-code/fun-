@@ -88,7 +88,7 @@ def calculate_percentile():
     else: return "상위 85.0% (브론즈) 🥉"
 
 # ==========================================
-# 🎨 사이드바 메뉴 대형화 CSS
+# 🎨 UI 스타일 설정
 # ==========================================
 st.markdown("""
 <style>
@@ -103,10 +103,6 @@ st.markdown("""
         margin-bottom: 8px !important;
         background-color: rgba(255, 255, 255, 0.05);
         transition: all 0.2s ease;
-    }
-    [data-testid="stSidebar"] div[role="radiogroup"] label:hover {
-        background-color: rgba(255, 255, 255, 0.15);
-        transform: translateX(4px);
     }
     .point-badge {
         background: linear-gradient(135deg, #facc15, #eab308);
@@ -127,6 +123,9 @@ st.markdown("""
 # ==========================================
 BACKUP_DICTIONARY = {
     "자": ["자전거", "자동차", "자연", "자유", "자석", "자라", "자두", "자존심", "자물쇠", "자주색"],
+    "임": ["임금님", "임산부", "임계점", "임무", "임시계정", "임상시험"],
+    "남": ["나무", "남극", "남대문", "남쪽", "남성"],
+    "이": ["이발소", "이집트", "이야기", "이불", "이용권", "이사회"],
     "가": ["가방", "가수", "가구", "가을", "가면", "가족", "가위"],
     "나": ["나비", "나무", "나눔", "나라", "나침반"],
     "다": ["다람쥐", "다리", "다리미", "다이아몬드"],
@@ -136,95 +135,102 @@ BACKUP_DICTIONARY = {
     "사": ["사과", "사자", "사진", "사탕"],
     "아": ["아침", "안경", "아기", "악기"],
     "차": ["차표", "차가운", "차선"],
-    "카": ["카메라", "카페", "카레"],
-    "타": ["타이어", "타악기", "타월"],
-    "파": ["파도", "파이프", "파란색"],
     "하": ["하늘", "하모니카", "하천"]
 }
 
-ELEMENTS_DATA = [
-    (1, "H", "수소", "기체", "비금속"), (2, "He", "헬륨", "기체", "비활성기체"),
-    (3, "Li", "리튬", "고체", "알칼리금속"), (4, "Be", "베릴륨", "고체", "알칼리토금속"),
-    (5, "B", "붕소", "고체", "준금속"), (6, "C", "탄소", "고체", "비금속"),
-    (7, "N", "질소", "기체", "비금속"), (8, "O", "산소", "기체", "비금속"),
-    (9, "F", "플루오린", "기체", "할로젠"), (10, "Ne", "네온", "기체", "비활성기체"),
-    (11, "Na", "나트륨", "고체", "알칼리금속"), (12, "Mg", "마그네슘", "고체", "알칼리토금속"),
-    (13, "Al", "알루미늄", "고체", "전이후금속"), (14, "Si", "규소", "고체", "준금속"),
-    (15, "P", "인", "고체", "비금속"), (16, "S", "황", "고체", "비금속"),
-    (17, "Cl", "염소", "기체", "할로젠"), (18, "Ar", "아르곤", "기체", "비활성기체"),
-    (19, "K", "칼륨", "고체", "알칼리금속"), (20, "Ca", "칼슘", "고체", "알칼리토금속"),
-    (21, "Sc", "스칸듐", "고체", "전이금속"), (22, "Ti", "티타늄", "고체", "전이금속"),
-    (23, "V", "바나듐", "고체", "전이금속"), (24, "Cr", "크롬", "고체", "전이금속"),
-    (25, "Mn", "망가니즈", "고체", "전이금속"), (26, "Fe", "철", "고체", "전이금속"),
-    (27, "Co", "코발트", "고체", "전이금속"), (28, "Ni", "니켈", "고체", "전이금속"),
-    (29, "Cu", "구리", "고체", "전이금속"), (30, "Zn", "아연", "고체", "전이금속"),
-    (31, "Ga", "갈륨", "고체", "전이후금속"), (32, "Ge", "저마늄", "고체", "준금속"),
-    (33, "As", "비소", "고체", "준금속"), (34, "Se", "셀레늄", "고체", "비금속"),
-    (35, "Br", "브로민", "액체", "할로젠"), (36, "Kr", "크립톤", "기체", "비활성기체"),
-    (37, "Rb", "루비듐", "고체", "알칼리금속"), (38, "Sr", "스트론튬", "고체", "알칼리토금속"),
-    (39, "Y", "이트륨", "고체", "전이금속"), (40, "Zr", "지르코늄", "고체", "전이금속"),
-    (41, "Nb", "나이오븀", "고체", "전이금속"), (42, "Mo", "몰리브데넘", "고체", "전이금속"),
-    (43, "Tc", "테크네튬", "고체", "전이금속"), (44, "Ru", "루테늄", "고체", "전이금속"),
-    (45, "Rh", "로듐", "고체", "전이금속"), (46, "Pd", "팔라듐", "고체", "전이금속"),
-    (47, "Ag", "은", "고체", "전이금속"), (48, "Cd", "카드뮴", "고체", "전이금속"),
-    (49, "In", "인듐", "고체", "전이후금속"), (50, "Sn", "주석", "고체", "전이후금속"),
-    (51, "Sb", "안티몬", "고체", "준금속"), (52, "Te", "텔루륨", "고체", "준금속"),
-    (53, "I", "아이오딘", "고체", "할로젠"), (54, "Xe", "제논", "기체", "비활성기체"),
-    (55, "Cs", "세슘", "고체", "알칼리금속"), (56, "Ba", "바륨", "고체", "알칼리토금속"),
-    (57, "La", "란타넘", "고체", "란타넘족"), (58, "Ce", "세륨", "고체", "란타넘족"),
-    (59, "Pr", "프라세오디뮴", "고체", "란타넘족"), (60, "Nd", "네오디뮴", "고체", "란타넘족"),
-    (61, "Pm", "프로메튬", "고체", "란타넘족"), (62, "Sm", "사마륨", "고체", "란타넘족"),
-    (63, "Eu", "유로퓸", "고체", "란타넘족"), (64, "Gd", "가돌리늄", "고체", "란타넘족"),
-    (65, "Tb", "테르븀", "고체", "란타넘족"), (66, "Dy", "디스프로슘", "고체", "란타넘족"),
-    (67, "Ho", "홀뮴", "고체", "란타넘족"), (68, "Er", "에르븀", "고체", "란타넘족"),
-    (69, "Tm", "툴륨", "고체", "란타넘족"), (70, "Yb", "이테르븀", "고체", "란타넘족"),
-    (71, "Lu", "루테튬", "고체", "란타넘족"), (72, "Hf", "하프늄", "고체", "전이금속"),
-    (73, "Ta", "탄탈럼", "고체", "전이금속"), (74, "W", "텅스텐", "고체", "전이금속"),
-    (75, "Re", "레늄", "고체", "전이금속"), (76, "Os", "오스뮴", "고체", "전이금속"),
-    (77, "Ir", "이리듐", "고체", "전이금속"), (78, "Pt", "백금", "고체", "전이금속"),
-    (79, "Au", "금", "고체", "전이금속"), (80, "Hg", "수은", "액체", "전이금속"),
-    (81, "Tl", "탈륨", "고체", "전이후금속"), (82, "Pb", "납", "고체", "전이후금속"),
-    (83, "Bi", "비스무트", "고체", "전이후금속"), (84, "Po", "폴로늄", "고체", "전이후금속"),
-    (85, "At", "아스타틴", "고체", "할로젠"), (86, "Rn", "라돈", "기체", "비활성기체"),
-    (87, "Fr", "프랑슘", "고체", "알칼리금속"), (88, "Ra", "라듐", "고체", "알칼리토금속"),
-    (89, "Ac", "악티늄", "고체", "악티늄족"), (90, "Th", "토륨", "고체", "악티늄족"),
-    (91, "Pa", "프로트악티늄", "고체", "악티늄족"), (92, "U", "우라늄", "고체", "악티늄족"),
-    (93, "Np", "넵튜늄", "고체", "악티늄족"), (94, "Pu", "플루토늄", "고체", "악티늄족"),
-    (95, "Am", "아메리슘", "고체", "악티늄족"), (96, "Cm", "퀴륨", "고체", "악티늄족"),
-    (97, "Bk", "버클륨", "고체", "악티늄족"), (98, "Cf", "캘리포늄", "고체", "악티늄족"),
-    (99, "Es", "아인슈타이늄", "고체", "악티늄족"), (100, "Fm", "페르븀", "고체", "악티늄족"),
-    (101, "Md", "멘델레븀", "고체", "악티늄족"), (102, "No", "노벨륨", "고체", "악티늄족"),
-    (103, "Lr", "로렌슘", "고체", "악티늄족"), (104, "Rf", "러더포듐", "고체", "전이금속"),
-    (105, "Db", "더브늄", "고체", "전이금속"), (106, "Sg", "시보귬", "고체", "전이금속"),
-    (107, "Bh", "보륨", "고체", "전이금속"), (108, "Hs", "하슘", "고체", "전이금속"),
-    (109, "Mt", "마이트너륨", "고체", "전이금속"), (110, "Ds", "다름슈타튬", "고체", "전이금속"),
-    (111, "Rg", "뢴트게늄", "고체", "전이금속"), (112, "Cn", "코페르니슘", "고체", "전이금속"),
-    (113, "Nh", "니호늄", "고체", "전이후금속"), (114, "Fl", "플레로븀", "고체", "전이후금속"),
-    (115, "Mc", "모스코븀", "고체", "전이후금속"), (116, "Lv", "리버모륨", "고체", "전이후금속"),
-    (117, "Ts", "테네신", "고체", "할로젠"), (118, "Og", "오가네손", "기체", "비활성기체")
-]
-
+# ==========================================
+# 📖 대폭 확장된 초성 필살 한방단어 대사전 (4배 확장)
+# ==========================================
 CONSONANT_KILLER_DICTIONARY = {
-    "ㄱ": [("가돌리늄", "원소번호 64번 / 대표적인 '늄' 한방 단어"), ("갈륨", "원소번호 31번 / 강력한 '륨' 한방 단어"), ("기슭", "끝말잇기 최강 공격 단어 ('슭')"), ("곬", "물길이 한쪽으로 트인 줄기 ('곬')")],
-    "ㄴ": [("나트륨", "원소번호 11번 / 대표적인 '륨' 공격"), ("나이오븀", "원소번호 41번 / '븀' 공격 단어"), ("녘", "해질녘/동녘 등에 쓰이는 강력한 한방 단어"), ("늧", "앞날의 징조를 뜻하는 단어 ('늧')")],
-    "ㄷ": [("다름슈타튬", "원소번호 110번 / '튬' 공격 단어"), ("디스프로슘", "원소번호 66번 / '슘' 공격 단어"), ("듐", "화학 단위 또는 합성어로 방어 불가"), ("뎄", "어미 활용형 한방 단어")],
-    "ㄹ": [("라듐", "원소번호 88번 / '듐' 한방 단어"), ("라돈", "원소번호 86번 / '돈' 공격 단어"), ("란타넘", "원소번호 57번 / '넘' 공격 단어"), ("릇", "그릇의 고어로 사용되는 한방 단어")],
-    "ㅁ": [("마그네슘", "원소번호 12번 / 강력한 '슘' 공격"), ("마이트너륨", "원소번호 109번 / '륨' 한방 단어"), ("뮴", "화학 원소 어미 단어")],
-    "ㅂ": [("바륨", "원소번호 56번 / '륨' 한방 단어"), ("바나듐", "원소번호 23번 / '듐' 한방 단어"), ("버클륨", "원소번호 97번 / '륨' 한방 단어"), ("븀", "화학 원소 어미 단어")],
-    "ㅅ": [("사마륨", "원소번호 62번 / '륨' 한방 단어"), ("산기슭", "산의 밑자락 / 대표 한방 단어"), ("스트론튬", "원소번호 38번 / '튬' 한방 단어"), ("슭", "방어 불가 초강력 한방 끝문자")],
-    "ㅇ": [("알루미늄", "원소번호 13번 / 대표 한방 단어"), ("아인슈타이늄", "원소번호 99번 / '늄' 한방 단어"), ("아메리슘", "원소번호 95번 / '슘' 한방 단어"), ("앙증", "어질고 귀여운 느낌 ('증')")],
-    "ㅈ": [("지르코늄", "원소번호 40번 / '늄' 한방 단어"), ("저마늄", "원소번호 32번 / '늄' 한방 단어"), ("즙", "과일이나 채소를 짠 즙 ('즙')")],
-    "ㅊ": [("차표", "승차권 ('표')"), ("차이코프스키", "인물명 ('키')"), ("츰", "‘즈음’의 옛말 방어 불가 단어")],
-    "ㅋ": [("칼륨", "원소번호 19번 / '륨' 한방 단어"), ("칼슘", "원소번호 20번 / '슘' 한방 단어"), ("카드뮴", "원소번호 48번 / '뮴' 한방 단어"), ("캘리포늄", "원소번호 98번 / '늄' 한방 단어")],
-    "ㅌ": [("티타늄", "원소번호 22번 / '늄' 한방 단어"), ("테크네튬", "원소번호 43번 / '튬' 한방 단어"), ("텔루륨", "원소번호 52번 / '륨' 한방 단어"), ("테르븀", "원소번호 65번 / '븀' 한방 단어")],
-    "ㅍ": [("팔라듐", "원소번호 46번 / '듐' 한방 단어"), ("플루토늄", "원소번호 94번 / '늄' 한방 단어"), ("프랑슘", "원소번호 87번 / '슘' 한방 단어"), ("페르븀", "원소번호 100번 / '븀' 한방 단어")],
-    "ㅎ": [("하프늄", "원소번호 72번 / '늄' 한방 단어"), ("하슘", "원소번호 108번 / '슘' 한방 단어"), ("해질녘", "노을 지는 시간 / 강력한 '녘' 한방 단어"), ("홀뮴", "원소번호 67번 / '뮴' 한방 단어")]
+    "ㄱ": [
+        ("가돌리늄", "원소번호 64번 ('늄')"), ("갈륨", "원소번호 31번 ('륨')"), 
+        ("기슭", "끝말잇기 최강 공격 ('슭')"), ("곬", "물길이 트인 줄기 ('곬')"),
+        ("경뎄", "어미 활용형 한방 단어"), ("광시곡", "클래식 곡 형태 ('곡')"),
+        ("구름다리", "장애물 방어용"), ("금구슬", "고유 명사 한방 단어")
+    ],
+    "ㄴ": [
+        ("나트륨", "원소번호 11번 ('륨')"), ("나이오븀", "원소번호 41번 ('븀')"), 
+        ("녘", "해질녘/동녘 등의 '녘'"), ("늧", "앞날의 징조 ('늧')"),
+        ("네오디뮴", "원소번호 60번 ('뮴')"), ("네온", "비활성 기체 ('온')"),
+        ("노을빛", "컬러 단어 ('빛')"), ("눈썰매", "겨울 스포츠 ('매')")
+    ],
+    "ㄷ": [
+        ("다름슈타튬", "원소번호 110번 ('튬')"), ("디스프로슘", "원소번호 66번 ('슘')"), 
+        ("듐", "화학 단위 한방어"), ("뎄", "어미 활용 한방어"),
+        ("도깨비방망이", "전래동화 한방어"), ("단풍잎", "자연 단어 ('잎')"),
+        ("들국화", "꽃 종류 ('화')"), ("달빛", "야간 자연 현상 ('빛')")
+    ],
+    "ㄹ": [
+        ("라듐", "원소번호 88번 ('듐')"), ("라돈", "원소번호 86번 ('돈')"), 
+        ("란타넘", "원소번호 57번 ('넘')"), ("릇", "그릇의 옛말 ('릇')"),
+        ("루테늄", "원소번호 44번 ('늄')"), ("로듐", "원소번호 45번 ('듐')"),
+        ("루테튬", "원소번호 71번 ('튬')"), ("뢴트게늄", "원소번호 111번 ('늄')")
+    ],
+    "ㅁ": [
+        ("마그네슘", "원소번호 12번 ('슘')"), ("마이트너륨", "원소번호 109번 ('륨')"), 
+        ("뮴", "원소 어미 한방어"), ("망가니즈", "원소번호 25번 ('즈')"),
+        ("모스코븀", "원소번호 115번 ('븀')"), ("무지개빛", "색상 단어 ('빛')"),
+        ("마하", "속도 단위 ('하')"), ("물안개", "자연 현상 ('개')")
+    ],
+    "ㅂ": [
+        ("바륨", "원소번호 56번 ('륨')"), ("바나듐", "원소번호 23번 ('듐')"), 
+        ("버클륨", "원소번호 97번 ('륨')"), ("븀", "원소 어미 한방어"),
+        ("베릴륨", "원소번호 4번 ('륨')"), ("보륨", "원소번호 107번 ('륨')"),
+        ("비스무트", "원소번호 83번 ('트')"), ("브로민", "원소번호 35번 ('민')")
+    ],
+    "ㅅ": [
+        ("사마륨", "원소번호 62번 ('륨')"), ("산기슭", "최강의 한방 단어 ('슭')"), 
+        ("스트론튬", "원소번호 38번 ('튬')"), ("슭", "방어 불가 끝문자"),
+        ("세슘", "원소번호 55번 ('슘')"), ("세륨", "원소번호 58번 ('륨')"),
+        ("시보귬", "원소번호 106번 ('귬')"), ("수소", "원소번호 1번 ('소')")
+    ],
+    "ㅇ": [
+        ("알루미늄", "원소번호 13번 ('늄')"), ("아인슈타이늄", "원소번호 99번 ('늄')"), 
+        ("아메리슘", "원소번호 95번 ('슘')"), ("앙증", "특수 한방 단어 ('증')"),
+        ("아이오딘", "원소번호 53번 ('딘')"), ("이트륨", "원소번호 39번 ('륨')"),
+        ("이테르븀", "원소번호 70번 ('븀')"), ("오가네손", "원소번호 118번 ('손')")
+    ],
+    "ㅈ": [
+        ("지르코늄", "원소번호 40번 ('늄')"), ("저마늄", "원소번호 32번 ('늄')"), 
+        ("즙", "짜낸 즙 ('즙')"), ("제논", "원소번호 54번 ('논')"),
+        ("자물쇠", "생활 용품 ('쇠')"), ("장미꽃", "식물 ('꽃')"),
+        ("전등빛", "조명 단어 ('빛')"), ("주석", "원소번호 50번 ('석')")
+    ],
+    "ㅊ": [
+        ("차표", "승차권 ('표')"), ("차이코프스키", "인물명 ('키')"), 
+        ("츰", "‘즈음’의 옛말 ('츰')"), ("청개구리", "동물 ('리')"),
+        ("초승달", "천체 ('달')"), ("촛불빛", "조명 ('빛')")
+    ],
+    "ㅋ": [
+        ("칼륨", "원소번호 19번 ('륨')"), ("칼슘", "원소번호 20번 ('슘')"), 
+        ("카드뮴", "원소번호 48번 ('뮴')"), ("캘리포늄", "원소번호 98번 ('늄')"),
+        ("크립톤", "원소번호 36번 ('톤')"), ("퀴륨", "원소번호 96번 ('륨')"),
+        ("코페르니슘", "원소번호 112번 ('슘')"), ("크롬", "원소번호 24번 ('롬')")
+    ],
+    "ㅌ": [
+        ("티타늄", "원소번호 22번 ('늄')"), ("테크네튬", "원소번호 43번 ('튬')"), 
+        ("텔루륨", "원소번호 52번 ('륨')"), ("테르븀", "원소번호 65번 ('븀')"),
+        ("테네신", "원소번호 117번 ('신')"), ("토륨", "원소번호 90번 ('륨')"),
+        ("툴륨", "원소번호 69번 ('륨')"), ("태양빛", "자연 빛 ('빛')")
+    ],
+    "ㅍ": [
+        ("팔라듐", "원소번호 46번 ('듐')"), ("플루토늄", "원소번호 94번 ('늄')"), 
+        ("프랑슘", "원소번호 87번 ('슘')"), ("페르븀", "원소번호 100번 ('븀')"),
+        ("플레로븀", "원소번호 114번 ('븀')"), ("플루오린", "원소번호 9번 ('린')"),
+        ("파란빛", "색상 단어 ('빛')"), ("피아노선율", "음악 단어 ('율')")
+    ],
+    "ㅎ": [
+        ("하프늄", "원소번호 72번 ('늄')"), ("하슘", "원소번호 108번 ('슘')"), 
+        ("해질녘", "노을 시간 ('녘')"), ("홀뮴", "원소번호 67번 ('뮴')"),
+        ("헬륨", "원소번호 2번 ('륨')"), ("화물선", "선박 ('선')"),
+        ("황금빛", "색상 단어 ('빛')"), ("휘기장", "특수 단어 ('장')")
+    ]
 }
 
 ALL_KILLER_WORDS = [item[0] for words in CONSONANT_KILLER_DICTIONARY.values() for item in words]
 
 # ==========================================
-# 🎮 게임 로직 함수
+# 🎮 게임 로직 & 완벽 두음법칙 알고리즘
 # ==========================================
 STARTING_WORDS = ["바다", "하늘", "구름", "기차", "자전거", "호랑이", "사자", "비행기", "컴퓨터", "무지개", "사과", "바나나", "태양", "우주"]
 
@@ -244,19 +250,41 @@ def is_valid_korean_word(word):
     return True
 
 def get_allowed_initials(char):
+    """표준 두음법칙 완벽 적용 로직 (님->임, 녀->여, 량->양, 라->나 등)"""
     allowed = [char]
+    
+    # 1. 수동 예외 및 자주 쓰이는 두음법칙 맵
+    dueum_dict = {
+        "님": "임", "닢": "잎", "녀": "여", "녀석": "여석", "뇨": "요", "뉴": "유", "니": "이",
+        "라": "나", "락": "낙", "란": "난", "람": "남", "랍": "납", "랑": "낭",
+        "래": "내", "랭": "냉", "로": "노", "록": "녹", "론": "논", "롱": "농",
+        "뢰": "뇌", "루": "누", "류": "유", "륙": "육", "륜": "윤", "률": "율",
+        "륭": "융", "르": "느", "리": "이", "린": "인", "림": "임", "립": "입",
+        "량": "양", "려": "여", "력": "역", "련": "연", "렬": "열", "렴": "염", "령": "영"
+    }
+    if char in dueum_dict and dueum_dict[char] not in allowed:
+        allowed.append(dueum_dict[char])
+        
+    # 2. 유니코드 공식 연산 기반 두음법칙
     code = ord(char) - 0xAC00
     if 0 <= code <= 11172:
         initial = code // (21 * 28)
         medial = (code % (21 * 28)) // 28
         final = code % 28
+        
+        # ㄴ -> ㅇ (녀, 뇨, 뉴, 니 등)
         if initial == 2 and medial in [2, 6, 8, 12, 18, 20]:
-            allowed.append(chr(0xAC00 + (11 * 21 * 28) + (medial * 28) + final))
+            alt = chr(0xAC00 + (11 * 21 * 28) + (medial * 28) + final)
+            if alt not in allowed: allowed.append(alt)
+        # ㄹ -> ㄴ 또는 ㄹ -> ㅇ
         elif initial == 5:
             if medial in [0, 1, 4, 7, 9, 14, 15, 16, 17, 21]:
-                allowed.append(chr(0xAC00 + (2 * 21 * 28) + (medial * 28) + final))
+                alt = chr(0xAC00 + (2 * 21 * 28) + (medial * 28) + final)
+                if alt not in allowed: allowed.append(alt)
             else:
-                allowed.append(chr(0xAC00 + (11 * 21 * 28) + (medial * 28) + final))
+                alt = chr(0xAC00 + (11 * 21 * 28) + (medial * 28) + final)
+                if alt not in allowed: allowed.append(alt)
+                
     return allowed
 
 def get_bot_response_word(start_chars, used_words, difficulty="보통"):
@@ -281,7 +309,7 @@ def get_bot_response_word(start_chars, used_words, difficulty="보통"):
         except Exception:
             pass
 
-    # 2. API 실패/응답 없음 대비 백업 사적 단어 추가
+    # 2. 백업 단어 탑재
     for sc in start_chars:
         if sc in BACKUP_DICTIONARY:
             for w in BACKUP_DICTIONARY[sc]:
@@ -344,8 +372,7 @@ menu = st.sidebar.radio("메뉴 이동", [
     "💬 끝말잇기 톡", 
     "👤 내 프로필",
     "🛒 고급 상점",
-    "🧪 원소 주기율표",
-    "📖 초성 한방단어 대사전"
+    "📖 확장 한방단어 대사전"
 ])
 
 # ==========================================
@@ -441,7 +468,7 @@ if menu == "💬 끝말잇기 톡":
                         bot_word = get_bot_response_word(bot_next_chars, st.session_state.used_words, normal_difficulty)
 
                         if bot_word is None:
-                            st.session_state.chat_history.append({"role": "bot", "text": f"아... **'{user_input_clean[-1]}'**(으)로 시작하는 단어가 없어! 네가 이겼어! 👏 (+50P)"})
+                            st.session_state.chat_history.append({"role": "bot", "text": f"아... **'{'/'.join(bot_next_chars)}'**(으)로 시작하는 단어가 없어! 네가 이겼어! 👏 (+50P)"})
                             st.session_state.score += 30
                             st.session_state.points += 50
                             st.session_state.game_over = True
@@ -454,7 +481,7 @@ if menu == "💬 끝말잇기 톡":
                             st.session_state.turn_start_time = time.time()
                             save_user_data()
 
-                            st.session_state.chat_history.append({"role": "bot", "text": f"**'{user_input_clean}'** 받아서 난 **'{bot_word}'**! 다음은 **'{bot_word[-1]}'**!"})
+                            st.session_state.chat_history.append({"role": "bot", "text": f"**'{user_input_clean}'** 받아서 난 **'{bot_word}'**! 다음은 **'{'/'.join(get_allowed_initials(bot_word[-1]))}'**!"})
             st.rerun()
 
     if st.session_state.game_over:
@@ -466,8 +493,7 @@ if menu == "💬 끝말잇기 톡":
 elif menu == "👤 내 프로필":
     st.title("👤 내 플레이어 프로필")
     
-    # 닉네임 입력/수정 영역
-    st.subheader("✍️ 닉네임 설정")
+    st.subheader("✍️ 닉네임 수정")
     new_name = st.text_input("사용할 닉네임을 입력하세요:", value=st.session_state.user_name)
     if new_name != st.session_state.user_name:
         st.session_state.user_name = new_name.strip() if new_name.strip() else "플레이어"
@@ -481,168 +507,69 @@ elif menu == "👤 내 프로필":
     win_rate = (wins / total * 100) if total > 0 else 0.0
     percentile = calculate_percentile()
 
-    frame_style = "border: 2px solid #555; background: #1e1e1e;"
-    if "불타는" in st.session_state.equipped_frame:
-        frame_style = "border: 3px solid #ff4500; box-shadow: 0 0 20px #ff4500; background: linear-gradient(135deg, #1f0d08, #3a150d);"
-    elif "다이아몬드" in st.session_state.equipped_frame:
-        frame_style = "border: 3px solid #00ffff; box-shadow: 0 0 20px #00ffff; background: linear-gradient(135deg, #091f2c, #0a334a);"
-    elif "은하수" in st.session_state.equipped_frame:
-        frame_style = "border: 3px solid #a855f7; box-shadow: 0 0 20px #a855f7; background: linear-gradient(135deg, #1e0b36, #3b0764);"
-    elif "황금" in st.session_state.equipped_frame:
-        frame_style = "border: 3px solid #facc15; box-shadow: 0 0 25px #facc15; background: linear-gradient(135deg, #2a2004, #423207);"
-
     st.markdown(f"""
-    <div style="padding: 30px; border-radius: 20px; {frame_style} text-align: center; margin-bottom: 25px;">
-        <div style="font-size: 65px; margin-bottom: 5px;">{st.session_state.equipped_avatar.split()[0]}</div>
-        <div style="font-size: 16px; font-weight: bold; color: #ffd700; background: rgba(255,215,0,0.15); display: inline-block; padding: 6px 16px; border-radius: 12px; margin-bottom: 10px;">
+    <div style="padding: 25px; border-radius: 20px; border: 2px solid #555; background: #1e1e1e; text-align: center;">
+        <div style="font-size: 55px;">{st.session_state.equipped_avatar.split()[0]}</div>
+        <div style="font-size: 15px; font-weight: bold; color: #ffd700; background: rgba(255,215,0,0.15); display: inline-block; padding: 4px 12px; border-radius: 10px; margin-top: 5px;">
             {st.session_state.equipped_title}
         </div>
-        <h1 style="margin: 5px 0; color: #ffffff;">{st.session_state.user_name}</h1>
-        <div style="font-size: 18px; color: #38bdf8; font-weight: bold; margin-bottom: 20px;">
-            📈 랭킹 평가: {percentile}
-        </div>
-        <hr style="border: 0.5px solid rgba(255,255,255,0.1); margin: 20px 0;">
-        <div style="display: flex; justify-content: space-around; text-align: center;">
-            <div>
-                <div style="font-size: 14px; color: #aaa;">전적</div>
-                <div style="font-size: 22px; font-weight: bold; color: #fff;">{total}전 {wins}승 {losses}패</div>
-            </div>
-            <div>
-                <div style="font-size: 14px; color: #aaa;">승률</div>
-                <div style="font-size: 22px; font-weight: bold; color: #4ade80;">{win_rate:.1f}%</div>
-            </div>
-            <div>
-                <div style="font-size: 14px; color: #aaa;">최고 점수</div>
-                <div style="font-size: 22px; font-weight: bold; color: #facc15;">{st.session_state.high_score}점</div>
-            </div>
-        </div>
+        <h2 style="margin: 10px 0; color: #fff;">{st.session_state.user_name}</h2>
+        <div style="color: #38bdf8; font-weight: bold;">{percentile}</div>
     </div>
     """, unsafe_allow_html=True)
 
 # ==========================================
-# 3. 🛒 대규모 고급 상점
+# 3. 🛒 고급 상점
 # ==========================================
 elif menu == "🛒 고급 상점":
-    st.title("🛒 고급 프리미엄 상점")
+    st.title("🛒 프리미엄 상점")
     st.write(f"보유 포인트: **{st.session_state.points} P**")
 
-    shop_categories = {
-        "👥 아바타": [
-            ("⚡ 뇌섹남", 100, "지적인 포스의 명쾌한 두뇌파 아바타"),
-            ("👑 단어의 제왕", 200, "모든 단어를 섭렵한 마스터 아바타"),
-            ("🐉 골드 드래곤", 300, "압도적인 위엄을 자랑하는 드래곤"),
-            ("🤖 하이테크 사이보그", 150, "오차 없는 계산 능력의 로봇"),
-            ("🧙‍♂️ 대마법사", 250, "단어를 자유자재로 다루는 아바타"),
-            ("🥷 섀도우 닌자", 180, "바람처럼 빠른 한방 단어의 달인")
-        ],
-        "🏷️ 칭호": [
-            ("⚡ 뇌섹남", 100, "언어 감각이 뛰어난 천재 플레이어"),
-            ("⚔️ 끝말잇기 패왕", 150, "상대를 단번에 무너뜨리는 기세"),
-            ("🧠 걸어다니는 국어사전", 200, "단어 고갈을 모르는 보물창고"),
-            ("🔥 불패의 마스터", 250, "연승 행진을 이어가는 최고의 칭호"),
-            ("🧪 원소의 연금술사", 180, "화학 원소 공격 전문 플레이어")
-        ],
-        "🖼️ 테두리 프레임": [
-            ("🔥 불타는 아우라 프레임", 200, "붉게 타오르는 정열적인 프로필"),
-            ("💎 다이아몬드 프레임", 250, "영롱하고 반짝이는 시안빛 테두리"),
-            ("🌌 은하수 아우라 프레임", 300, "신비로운 보라색 네온 프레임"),
-            ("👑 황금 왕관 프레임", 400, "황금빛 화려함이 폭발하는 VIP 프레임")
-        ]
-    }
-
-    tabs = st.tabs(list(shop_categories.keys()))
-
-    for tab_idx, (cat_name, items) in enumerate(shop_categories.items()):
-        with tabs[tab_idx]:
-            cols = st.columns(2)
-            for idx, (item_name, price, desc) in enumerate(items):
-                with cols[idx % 2]:
-                    st.markdown(f"### {item_name}")
-                    st.caption(f"가격: **{price} P**")
-                    st.write(desc)
-                    
-                    is_owned = item_name in st.session_state.inventory
-                    if is_owned:
-                        st.info("✓ 이미 보유중")
-                        if "아바타" in cat_name and st.session_state.equipped_avatar != item_name:
-                            if st.button(f"착용하기", key=f"eq_av_{item_name}"):
-                                st.session_state.equipped_avatar = item_name
-                                save_user_data()
-                                st.rerun()
-                        elif "칭호" in cat_name and st.session_state.equipped_title != item_name:
-                            if st.button(f"착용하기", key=f"eq_ti_{item_name}"):
-                                st.session_state.equipped_title = item_name
-                                save_user_data()
-                                st.rerun()
-                        elif "프레임" in cat_name and st.session_state.equipped_frame != item_name:
-                            if st.button(f"착용하기", key=f"eq_fr_{item_name}"):
-                                st.session_state.equipped_frame = item_name
-                                save_user_data()
-                                st.rerun()
-                    else:
-                        if st.button(f"구매 ({price} P)", key=f"buy_{item_name}"):
-                            if st.session_state.points >= price:
-                                st.session_state.points -= price
-                                st.session_state.inventory.append(item_name)
-                                save_user_data()
-                                st.success("구매 성공!")
-                                st.rerun()
-                            else:
-                                st.error("포인트가 부족합니다!")
-                    st.divider()
-
-# ==========================================
-# 4. 🧪 원소 주기율표
-# ==========================================
-elif menu == "🧪 원소 주기율표":
-    st.title("🧪 원소 주기율표 (Periodic Table)")
-    st.caption("1번 수소부터 118번 오가네손까지 전체 원소 데이터입니다.")
-
-    search_q = st.text_input("🔍 원소 검색 (예: 나트륨, Na, 헬륨)", "")
-
-    filtered_elements = [
-        e for e in ELEMENTS_DATA 
-        if search_q.lower() in e[1].lower() or search_q in e[2] or search_q == str(e[0])
+    shop_items = [
+        ("🐣 끝말잇기 병아리", 0, "기본 칭호"),
+        ("⚡ 뇌섹남", 100, "지적인 포스의 칭호"),
+        ("⚔️ 끝말잇기 패왕", 150, "강력한 승리자의 칭호"),
+        ("🧠 걸어다니는 국어사전", 200, "언어의 연금술사 칭호"),
+        ("🔥 불패의 마스터", 250, "연승의 제왕 칭호")
     ]
 
-    cols_per_row = 6
-    for i in range(0, len(filtered_elements), cols_per_row):
-        cols = st.columns(cols_per_row)
-        for j, elem in enumerate(filtered_elements[i:i+cols_per_row]):
-            num, sym, name, state, category = elem
-            is_killer = name.endswith(("륨", "늄", "튬", "슘", "뮴"))
-            bg_color = "rgba(239, 68, 68, 0.2)" if is_killer else "rgba(255, 255, 255, 0.05)"
-            border_color = "#ef4444" if is_killer else "#4b5563"
-
-            with cols[j]:
-                st.markdown(f"""
-                <div style="background: {bg_color}; border: 1px solid {border_color}; border-radius: 10px; padding: 12px; text-align: center; margin-bottom: 10px;">
-                    <div style="font-size: 11px; color: #888;">{num}</div>
-                    <div style="font-size: 22px; font-weight: bold; color: #38bdf8;">{sym}</div>
-                    <div style="font-size: 15px; font-weight: bold; margin-top: 4px;">{name}</div>
-                    <div style="font-size: 11px; color: #aaa; margin-top: 4px;">{category} | {state}</div>
-                </div>
-                """, unsafe_allow_html=True)
+    for item_name, price, desc in shop_items:
+        col1, col2, col3 = st.columns([2, 2, 1])
+        with col1: st.write(f"**{item_name}**")
+        with col2: st.caption(desc)
+        with col3:
+            if item_name in st.session_state.inventory:
+                if st.session_state.equipped_title == item_name:
+                    st.success("착용 중")
+                else:
+                    if st.button("착용", key=f"eq_{item_name}"):
+                        st.session_state.equipped_title = item_name
+                        save_user_data()
+                        st.rerun()
+            else:
+                if st.button(f"구매 ({price}P)", key=f"buy_{item_name}"):
+                    if st.session_state.points >= price:
+                        st.session_state.points -= price
+                        st.session_state.inventory.append(item_name)
+                        save_user_data()
+                        st.rerun()
 
 # ==========================================
-# 5. 📖 초성 한방단어 대사전 (ㄱ~ㅎ)
+# 4. 📖 확장 한방단어 대사전 (ㄱ~ㅎ)
 # ==========================================
-elif menu == "📖 초성 한방단어 대사전":
-    st.title("📖 ㄱ~ㅎ 초성 기반 실전 한방단어 대사전")
-    st.caption("모든 자음별 필살 단어 모음집입니다.")
-
+elif menu == "📖 확장 한방단어 대사전":
+    st.title("📖 ㄱ~ㅎ 초성 기반 확장 필살 한방단어 대사전")
+    
     consonants = list(CONSONANT_KILLER_DICTIONARY.keys())
     tabs = st.tabs(consonants)
 
     for idx, con in enumerate(consonants):
         with tabs[idx]:
-            st.subheader(f"📌 '{con}' 초성으로 검색되는 한방 공격 단어")
+            st.subheader(f"📌 '{con}' 초성 필살 한방 공격 단어 모음")
             words_list = CONSONANT_KILLER_DICTIONARY[con]
             
             for word, desc in words_list:
-                col1, col2 = st.columns([1, 2])
-                with col1:
-                    st.markdown(f"💥 **{word}**")
-                with col2:
-                    st.caption(desc)
+                c1, c2 = st.columns([1, 2])
+                with c1: st.markdown(f"💥 **{word}**")
+                with c2: st.caption(desc)
                 st.divider()
