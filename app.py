@@ -4,23 +4,23 @@ import random
 import json
 import os
 
-st.set_page_config(page_title="친한친구 끝말잇기 톡", page_icon="💬", layout="wide")
+st.set_page_config(page_title="TACTICAL WORD CHAIN", page_icon="⚔️", layout="wide")
 
 # ==========================================
 # 💾 데이터 영구 저장 및 불러오기
 # ==========================================
-SAVE_FILE = "user_data.json"
+SAVE_FILE = "user_tactical_data.json"
 
 def load_user_data():
     default_data = {
-        "user_name": "플레이어",
-        "points": 1000,
+        "user_name": "요원_01",
+        "points": 1500,
         "score": 0,
-        "inventory": ["🐣 끝말잇기 병아리", "🐣 병아리", "기본 프레임", "기본 테마"],
-        "equipped_theme": "기본 테마",
-        "equipped_avatar": "🐣 병아리",
+        "inventory": ["🎖️ 신병 요원", "👤 요원 아바타", "기본 프레임", "🔴 발로란트 레드"],
+        "equipped_theme": "🔴 발로란트 레드",
+        "equipped_avatar": "👤 요원 아바타",
         "equipped_frame": "기본 프레임",
-        "equipped_title": "🐣 끝말잇기 병아리",
+        "equipped_title": "🎖️ 신병 요원",
     }
     if os.path.exists(SAVE_FILE):
         try:
@@ -58,7 +58,7 @@ if "data_loaded" not in st.session_state:
     st.session_state.data_loaded = True
 
 # ==========================================
-# 🔤 두음법칙 사전
+# 🔤 두음법칙 규칙 매핑
 # ==========================================
 DUEUM_MAP = {
     '라': ['나'], '락': ['낙'], '란': ['난'], '랄': ['날'], '람': ['남'], '랍': ['납'], '랑': ['낭'],
@@ -78,13 +78,15 @@ def get_allowed_initials(char):
     return list(dict.fromkeys(allowed))
 
 # ==========================================
-# 🛡️ 네이버 사전 API (자동완성 & 검색)
+# 🌐 안정화된 네이버 사전 API
 # ==========================================
 def safe_naver_search(query):
-    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    }
     url = f"https://dict.naver.com/api/search/autocomplete?query={query}&st=11111"
     try:
-        res = requests.get(url, headers=headers, timeout=2)
+        res = requests.get(url, headers=headers, timeout=3)
         if res.status_code == 200:
             return res.json()
     except Exception:
@@ -92,51 +94,87 @@ def safe_naver_search(query):
     return None
 
 # ==========================================
-# 🎨 스타일링 CSS (상점 테마 & 프레임 적용)
+# 🎨 발로란트 / 롤 택티컬 게이밍 스타일 CSS
 # ==========================================
 theme_styles = {
-    "기본 테마": "background-color: #ffffff; color: #1e293b;",
-    "🌙 딥 다크": "background-color: #0f172a; color: #f8fafc;",
-    "⚡ 사이버 네온": "background-color: #0d0221; color: #00f6ff;",
-    "✨ 화려한 골드": "background-color: #1a1500; color: #ffd700;",
-    "🌸 핑크 블라썸": "background-color: #fff0f5; color: #8b008b;",
-    "🌲 포레스트 그린": "background-color: #052e16; color: #4ade80;",
-    "🌊 오션 블루": "background-color: #0c4a6e; color: #38bdf8;",
-    "🌆 노을 서셋": "background-color: #451a03; color: #fb923c;",
-    "🍇 바이올렛": "background-color: #2e1065; color: #c084fc;",
-    "🍞 따뜻한 카페": "background-color: #291d18; color: #e5e5e5;"
+    "🔴 발로란트 레드": "background-color: #0f1923; color: #ece8e1; primary-color: #ff4655;",
+    "🟢 래디언트 시안": "background-color: #081619; color: #dbf8ff; primary-color: #00f5d4;",
+    "🟡 챌린저 골드": "background-color: #12100b; color: #f7e7c4; primary-color: #f59e0b;",
+    "🟣 공허의 아칼리": "background-color: #140b24; color: #e9d8a6; primary-color: #a855f7;",
+    "⚔️ 밀리터리 카키": "background-color: #191c14; color: #e2e8f0; primary-color: #84cc16;"
 }
 
 frame_styles = {
-    "기본 프레임": "2px solid #94a3b8",
-    "🔥 화염 테두리": "4px solid #ff4500",
-    "💎 다이아 테두리": "4px solid #00ffff",
-    "🌟 은하수 테두리": "4px solid #a855f7",
-    "👑 황금 왕관 테두리": "4px solid #eab308",
-    "🌈 무지개 테두리": "4px solid #ff007f",
-    "❄️ 얼음 테두리": "4px solid #38bdf8",
-    "⚡ 번개 테두리": "4px solid #facc15",
-    "🌿 자연 테두리": "4px solid #22c55e",
-    "🔮 마법 테두리": "4px solid #6366f1"
+    "기본 프레임": "2px solid #334155",
+    "🔴 발로란트 레드 테두리": "3px solid #ff4655",
+    "🟢 래디언트 네온 테두리": "3px solid #00f5d4",
+    "🟡 챌린저 테두리": "3px solid #f59e0b",
+    "🟣 공허 테두리": "3px solid #a855f7",
+    "⚔️ 특수부대 테두리": "3px solid #84cc16"
 }
 
-active_theme = theme_styles.get(st.session_state.equipped_theme, theme_styles["기본 테마"])
+active_theme = theme_styles.get(st.session_state.equipped_theme, theme_styles["🔴 발로란트 레드"])
 active_frame = frame_styles.get(st.session_state.equipped_frame, frame_styles["기본 프레임"])
 
 st.markdown(f"""
 <style>
-    html, body, [class*="css"] {{ font-size: 19px !important; }}
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap');
+    
+    html, body, [class*="css"] {{ font-family: 'Malgun Gothic', 'Noto Sans KR', sans-serif; }}
     .main {{ {active_theme} }}
-    .stChatMessage p {{ font-size: 21px !important; line-height: 1.6 !important; }}
-    .stButton>button {{ font-size: 18px !important; font-weight: bold !important; padding: 10px 20px !important; border-radius: 12px !important; }}
-    .point-badge {{ background: linear-gradient(135deg, #facc15, #eab308); color: #000; padding: 18px; border-radius: 16px; text-align: center; font-size: 28px; font-weight: 900; box-shadow: 0 4px 15px rgba(250, 204, 21, 0.4); margin-bottom: 25px; }}
-    .killer-card {{ background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; border-radius: 10px; padding: 12px; margin: 5px 0; text-align: center; font-weight: bold; font-size: 18px; color: #ef4444; }}
-    .dict-card {{ background: rgba(59, 130, 246, 0.1); border: 1px solid #3b82f6; border-radius: 10px; padding: 15px; margin: 10px 0; }}
+    
+    .stChatMessage {{ background-color: rgba(255, 255, 255, 0.03) !important; border-radius: 8px !important; margin-bottom: 8px !important; border: 1px solid rgba(255,255,255,0.08); }}
+    .stChatMessage p {{ font-size: 19px !important; line-height: 1.5 !important; }}
+    
+    .stButton>button {{
+        background: linear-gradient(135deg, #ff4655 0%, #bd3944 100%) !important;
+        color: #ffffff !important;
+        border: none !important;
+        font-weight: 900 !important;
+        letter-spacing: 1px !important;
+        text-transform: uppercase !important;
+        border-radius: 4px !important;
+        padding: 10px 24px !important;
+        box-shadow: 0 0 15px rgba(255, 70, 85, 0.4);
+    }}
+    
+    .tactical-badge {{
+        background: rgba(15, 25, 35, 0.85);
+        border: 2px solid #ff4655;
+        color: #ff4655;
+        padding: 15px;
+        border-radius: 6px;
+        text-align: center;
+        font-family: 'Orbitron', sans-serif;
+        font-size: 26px;
+        font-weight: 900;
+        letter-spacing: 2px;
+        margin-bottom: 20px;
+        box-shadow: inset 0 0 10px rgba(255, 70, 85, 0.2);
+    }}
+    
+    .killer-card {{
+        background: #1e293b;
+        border-left: 4px solid #ef4444;
+        padding: 10px;
+        margin: 4px 0;
+        font-weight: bold;
+        color: #f8fafc;
+        font-size: 16px;
+    }}
+    
+    .dict-card {{
+        background: rgba(30, 41, 59, 0.7);
+        border: 1px solid #3b82f6;
+        border-radius: 6px;
+        padding: 12px;
+        margin: 8px 0;
+    }}
 </style>
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 🧪 원소 주기율표 (1~118 완벽 데이터)
+# 🧪 원소 주기율표 데이터 (1~118)
 # ==========================================
 ELEMENTS_DATA = [
     (1, "H", "수소", "기체", "비금속"), (2, "He", "헬륨", "기체", "비활성기체"), (3, "Li", "리튬", "고체", "알칼리금속"), (4, "Be", "베릴륨", "고체", "알칼리토금속"),
@@ -172,13 +210,13 @@ ELEMENTS_DATA = [
 ]
 
 # ==========================================
-# 💥 한방단어 대사전 (검증된 100개 이상)
+# 💥 한방 단어 사전 (진짜 표준 명사만)
 # ==========================================
 MASSIVE_KILLER_DICTIONARY = {
     "륨 계열 (25개) 💥": [
         "나트륨", "칼륨", "헬륨", "베릴륨", "바륨", "라듐", "루비듐", "세슘", "이테르븀", "페르븀",
-        "노벨륨", "플레로븀", "리버모륨", "마이트너륨", "다름슈타튬", "일륨", "카드뮴", "오스뮴", "로듐", "이리듐",
-        "탈륨", "세륨", "테르븀", "에르븀", "툴륨"
+        "노벨륨", "플레로븀", "리버모륨", "마이트너륨", "다름슈타튬", "카드뮴", "오스뮴", "로듐", "이리듐",
+        "탈륨", "세륨", "테르븀", "에르븀", "툴륨", "하프늄"
     ],
     "늄 계열 (25개) 💥": [
         "플루토늄", "우라늄", "악티늄", "넵튜늄", "알루미늄", "지르코늄", "더브늄", "시보귬", "보륨", "하슘",
@@ -189,23 +227,24 @@ MASSIVE_KILLER_DICTIONARY = {
         "리튬", "루테튬", "프로메튬", "스칸듐", "칼슘", "마그네슘", "스트론튬", "포타슘", "아메리슘", "아이오딘",
         "아인슈타이늄", "멘델레븀", "로렌슘", "러더포듐", "프라세오디뮴", "네오디뮴", "사마륨", "유로퓸", "가돌리늄", "디스프로슘"
     ],
-    "특수 끝말 (슭/녘/즘/븀) (30개) 💥": [
-        "기슭", "산기슭", "강기슭", "처마기슭", "해질녘", "새벽녘", "들녘", "어스름녘", "동녘", "서녘",
-        "남녘", "북녘", "밤녘", "날녘", "아침녘", "저녁녘", "모더니즘", "리얼리즘", "메커니즘", "알고리즘",
-        "네오디뮴", "퀴륨", "버클륨", "홀뮴", "콜롬븀", "테네신", "오가네손", "아스타틴", "크립톤", "아르곤"
+    "특수 끝말 (녘/즘/븀) (25개) 💥": [
+        "해질녘", "새벽녘", "들녘", "어스름녘", "동녘", "서녘", "남녘", "북녘", "밤녘", "날녘",
+        "아침녘", "저녁녘", "모더니즘", "리얼리즘", "메커니즘", "알고리즘", "네오디뮴", "퀴륨", "버클륨",
+        "홀뮴", "콜롬븀", "테네신", "오가네손", "아스타틴", "크립톤"
     ]
 }
 
 ALL_KILLER_WORDS = list(set([w for group in MASSIVE_KILLER_DICTIONARY.values() for w in group]))
 
 # ==========================================
-# 📚 백업 사전 (실제 존재하는 단어로만 구성)
+# 📚 백업 실사용 사전 ('표', '리', '기' 등 모든 어휘 포함)
 # ==========================================
 MEGA_FALLBACK_DICTIONARY = {
-    "리": ["리본", "리듬", "리코더", "리모컨", "리조트", "리갈", "리액션", "리필", "리얼리티", "리하사자"],
+    "표": ["표정", "표지판", "표범", "표준", "표적", "표류", "표면", "표현", "표제어", "표인"],
+    "리": ["리본", "리듬", "리코더", "리모컨", "리조트", "리갈", "리액션", "리필", "리얼리티", "리허설"],
     "이": ["이야기", "이발소", "이유", "이불", "이웃", "이메일", "이탈리아", "이동", "이구아나", "이발사"],
-    "기": ["기차", "기린", "기타", "기와", "기구", "기사", "기름", "기적", "기업", "기계", "기와집"],
-    "차": ["차표", "차창", "차나무", "차고지", "차선", "차돌", "차량", "차고"],
+    "기": ["기차", "기린", "기타", "기와", "기구", "기사", "기름", "기적", "기업", "기계"],
+    "차": ["차표", "차창", "차나무", "차고지", "차선", "차돌", "차량", "차고", "차지"],
     "구": ["구름", "구두", "구슬", "구경", "구조대", "구역", "구경꾼", "구식"],
     "음": ["음악", "음식", "음료수", "음성", "음향", "음자리표"],
     "바": ["바다", "바나나", "바구니", "바람", "바위", "바질", "바코드", "바리스타"],
@@ -217,10 +256,19 @@ MEGA_FALLBACK_DICTIONARY = {
 }
 
 # ==========================================
-# 🎮 AI 봇 로직 (지어낸 단어 완전 차단)
+# 🎮 랜덤 시작 단어 풀 (50개 이상)
 # ==========================================
-STARTING_WORDS = ["바다", "하늘", "구름", "기차", "자전거", "호랑이", "사자", "비행기", "컴퓨터", "무지개", "사과", "바나나"]
+STARTING_WORDS = [
+    "바다", "하늘", "구름", "기차", "자전거", "호랑이", "사자", "비행기", "컴퓨터", "무지개", 
+    "사과", "바나나", "표지판", "스마트폰", "태양이", "자동차", "우주선", "카메라", "도서관", "선풍기",
+    "아이스크림", "초콜릿", "피자", "햄버거", "고양이", "강아지", "돌고래", "독수리", "해바라기", "장미꽃",
+    "축구공", "농구공", "야구방망이", "체육관", "운동장", "수영장", "박물관", "미술관", "영화관", "백화점",
+    "편의점", "지하철", "고속버스", "오토바이", "헬리콥터", "잠수함", "망원경", "현미경", "계산기", "시계"
+]
 
+# ==========================================
+# 🤖 봇 인공지능 로직 (난이도 완전 적용)
+# ==========================================
 def is_valid_korean_word(word):
     res_json = safe_naver_search(word)
     if res_json:
@@ -229,11 +277,11 @@ def is_valid_korean_word(word):
                 if item[0][0] == word: return True
     return len(word) >= 2 and word.isalpha()
 
-def get_bot_response_word(start_chars, used_words, difficulty="보통", game_turn=0):
+def get_bot_response_word(start_chars, used_words, difficulty="보통"):
     clean_used = [w.strip() for w in used_words]
     candidates = []
 
-    # 1. 온라인 사전 검증 검색
+    # 1. 온라인 사전 검색
     for sc in start_chars:
         res_json = safe_naver_search(sc)
         if res_json:
@@ -243,7 +291,7 @@ def get_bot_response_word(start_chars, used_words, difficulty="보통", game_tur
                     if len(w) >= 2 and w.isalpha() and w[0] in start_chars and w not in clean_used:
                         candidates.append(w)
 
-    # 2. 검증된 오프라인 백업 단어장 검색
+    # 2. 오프라인 백업 단어장 검색
     for sc in start_chars:
         if sc in MEGA_FALLBACK_DICTIONARY:
             for fw in MEGA_FALLBACK_DICTIONARY[sc]:
@@ -252,31 +300,45 @@ def get_bot_response_word(start_chars, used_words, difficulty="보통", game_tur
 
     candidates = list(set(candidates))
     
-    # 지어낸 단어 안전 로직 완전 삭제 (단어가 없으면 정직하게 인정)
+    # 단어가 없으면 지어내지 않고 패배 인정
     if not candidates:
         return None
 
-    killer_endings = ("륨", "늄", "튬", "슘", "뮴", "븀", "슭", "녘", "즘")
+    killer_endings = ("륨", "늄", "튬", "슘", "뮴", "븀", "녘", "즘")
     safe_candidates = [w for w in candidates if w not in ALL_KILLER_WORDS and not w.endswith(killer_endings)]
+    killer_candidates = [w for w in candidates if w in ALL_KILLER_WORDS or w.endswith(killer_endings)]
 
-    # 15턴 이하 안전 모드 (티키타카 보장)
-    if game_turn <= 15:
+    # 난이도 제어 로직
+    if difficulty == "쉬움":
+        # 안전한 짧은 단어 우선 선택
         if safe_candidates:
             return random.choice(safe_candidates)
         return random.choice(candidates)
+        
+    elif difficulty == "보통":
+        # 기본 공격 확률 (10% 확률로 한방 단어)
+        if killer_candidates and random.random() < 0.1:
+            return random.choice(killer_candidates)
+        return random.choice(safe_candidates) if safe_candidates else random.choice(candidates)
+        
+    elif difficulty == "어려움":
+        # 공격적 (50% 확률로 한방 단어)
+        if killer_candidates and random.random() < 0.5:
+            return random.choice(killer_candidates)
+        return random.choice(safe_candidates) if safe_candidates else random.choice(candidates)
+        
+    elif difficulty == "매우 어려움":
+        # 무조건 한방 단어 최우선 공격
+        if killer_candidates:
+            return random.choice(killer_candidates)
+        return random.choice(safe_candidates) if safe_candidates else random.choice(candidates)
 
-    # 15턴 이후 공격 모드
-    if difficulty in ["어려움", "매우 어려움"]:
-        killers = [w for w in candidates if w in ALL_KILLER_WORDS or w.endswith(killer_endings)]
-        if killers and random.random() < 0.6:
-            return random.choice(killers)
-
-    return random.choice(safe_candidates) if safe_candidates else random.choice(candidates)
+    return random.choice(candidates)
 
 def reset_game():
     first_word = random.choice(STARTING_WORDS)
     st.session_state.chat_history = [
-        {"role": "bot", "text": f"안녕 {st.session_state.user_name}! 첫 단어는 **'{first_word}'**이야! **'{first_word[-1]}'**(으)로 시작해줘!"}
+        {"role": "bot", "text": f"🎯 **[TACTICAL MATCH MATCH]** 첫 단어는 **'{first_word}'**! 다음 단어를 입력하라. (**'{first_word[-1]}'** 시작)"}
     ]
     st.session_state.last_word = first_word
     st.session_state.used_words = [first_word]
@@ -286,31 +348,39 @@ def reset_game():
 if "chat_history" not in st.session_state: reset_game()
 
 # ==========================================
-# 📌 사이드바 메뉴 & 포인트 표시
+# 📌 사이드바 (포인트 & 메인 메뉴)
 # ==========================================
 st.sidebar.markdown(f"""
-<div class="point-badge">
-    💰 {st.session_state.points} P
+<div class="tactical-badge">
+    CREDITS: {st.session_state.points} P
 </div>
 """, unsafe_allow_html=True)
 
-menu = st.sidebar.radio("메뉴 이동", [
-    "💬 끝말잇기 톡", 
-    "📕 한방단어 대사전 (100+)",
-    "🔍 네이버 사전 단어/뜻 검색",
-    "🛒 상점 (40종 아이템)",
-    "👤 프로필 & 스타일 꾸미기",
+menu = st.sidebar.radio("COMMAND CENTER", [
+    "⚔️ 끝말잇기 매치", 
+    "📕 한방 단어 대사전",
+    "🔍 네이버 사전 정밀 검색",
+    "🛒 택티컬 상점 (40종)",
+    "👤 요원 프로필 & 테마 설정",
     "🧪 원소 주기율표 (1~118)"
 ])
 
 # ==========================================
-# 1. 💬 끝말잇기 톡
+# 1. ⚔️ 끝말잇기 매치
 # ==========================================
-if menu == "💬 끝말잇기 톡":
-    st.title("💬 끝말잇기 톡")
-    difficulty = st.sidebar.select_slider("⚙️ 난이도 선택:", options=["쉬움", "보통", "어려움", "매우 어려움"], value="보통")
+if menu == "⚔️ 끝말잇기 매치":
+    st.title("⚔️ TACTICAL WORD CHAIN MATCH")
     
-    st.info(f"🔄 **현재 진행: {st.session_state.game_turn}턴** | 두음법칙 완벽 지원 & 가짜 단어 생성 차단")
+    col_diff, col_reset = st.columns([3, 1])
+    with col_diff:
+        difficulty = st.select_slider("⚙️ 봇 인공지능 난이도 설정:", options=["쉬움", "보통", "어려움", "매우 어려움"], value="보통")
+    with col_reset:
+        st.write(" ")
+        if st.button("🔄 매치 리셋"):
+            reset_game()
+            st.rerun()
+
+    st.caption(f"턴 진행: {st.session_state.game_turn} | 선택 난이도: {difficulty} | 두음법칙 자동 적용 중")
 
     for msg in st.session_state.chat_history:
         avatar = st.session_state.equipped_avatar.split()[0] if msg["role"] == "user" else "🤖"
@@ -321,22 +391,22 @@ if menu == "💬 끝말잇기 톡":
     allowed_str = '/'.join(allowed_chars)
 
     if not st.session_state.game_over:
-        user_input = st.chat_input(f"'{allowed_str}'(으)로 시작하는 단어 입력...")
+        user_input = st.chat_input(f"'{allowed_str}' (으)로 시작하는 단어 입력...")
         if user_input:
             user_input_clean = user_input.strip()
             st.session_state.chat_history.append({"role": "user", "text": user_input_clean})
 
             if len(user_input_clean) < 2:
-                st.session_state.chat_history.append({"role": "bot", "text": "두 글자 이상 입력해야 해! ❌"})
+                st.session_state.chat_history.append({"role": "bot", "text": "❌ 최소 2글자 이상이어야 합니다!"})
                 st.session_state.game_over = True
             elif user_input_clean[0] not in allowed_chars:
-                st.session_state.chat_history.append({"role": "bot", "text": f"글자가 맞지 않아! **'{allowed_str}'**(으)로 시작해야 해! (두음법칙 가능)"})
+                st.session_state.chat_history.append({"role": "bot", "text": f"❌ 단어가 일치하지 않습니다! **'{allowed_str}'** 로 시작해야 합니다."})
                 st.session_state.game_over = True
             elif user_input_clean in st.session_state.used_words:
-                st.session_state.chat_history.append({"role": "bot", "text": "이미 사용된 중복 단어야! 😜"})
+                st.session_state.chat_history.append({"role": "bot", "text": "❌ 이미 사용된 중복 단어입니다!"})
                 st.session_state.game_over = True
             elif not is_valid_korean_word(user_input_clean):
-                st.session_state.chat_history.append({"role": "bot", "text": "사전에 존재하지 않는 단어야! 😅"})
+                st.session_state.chat_history.append({"role": "bot", "text": "❌ 국어사전에 등재되지 않은 단어입니다!"})
                 st.session_state.game_over = True
             else:
                 st.session_state.used_words.append(user_input_clean)
@@ -344,11 +414,11 @@ if menu == "💬 끝말잇기 톡":
                 st.session_state.game_turn += 1
 
                 bot_next_chars = get_allowed_initials(user_input_clean[-1])
-                bot_word = get_bot_response_word(bot_next_chars, st.session_state.used_words, difficulty, st.session_state.game_turn)
+                bot_word = get_bot_response_word(bot_next_chars, st.session_state.used_words, difficulty)
 
                 if bot_word is None:
-                    st.session_state.chat_history.append({"role": "bot", "text": f"**'{user_input_clean}'**?! 😱 더 이상 단어가 없어... 네가 이겼어! 🎉 (+100P)"})
-                    st.session_state.points += 100
+                    st.session_state.chat_history.append({"role": "bot", "text": f"💥 **'{user_input_clean}'** 공격 성공! 봇이 단어를 찾지 못했습니다. 매치 승리! 🎉 (+150P)"})
+                    st.session_state.points += 150
                     st.session_state.game_over = True
                     save_user_data()
                     st.balloons()
@@ -358,20 +428,17 @@ if menu == "💬 끝말잇기 톡":
                     st.session_state.points += 10
                     save_user_data()
                     next_allowed = '/'.join(get_allowed_initials(bot_word[-1]))
-                    st.session_state.chat_history.append({"role": "bot", "text": f"**'{user_input_clean}'** 받아쳐서 **'{bot_word}'**! 다음은 **'{next_allowed}'**!"})
+                    st.session_state.chat_history.append({"role": "bot", "text": f"⚡ **'{user_input_clean}'** ➔ 봇의 수비: **'{bot_word}'**! 다음 목표: **'{next_allowed}'**"})
             st.rerun()
 
-    if st.session_state.game_over:
-        st.button("🔄 새 게임 시작", on_click=reset_game)
-
 # ==========================================
-# 2. 📕 한방단어 대사전 (100개+)
+# 2. 📕 한방 단어 대사전
 # ==========================================
-elif menu == "📕 한방단어 대사전 (100+)":
-    st.title("📕 한방단어 대사전 (100개 이상)")
-    st.write("상대방을 한번에 제압할 수 있는 검증된 한방 단어 모음입니다.")
+elif menu == "📕 한방 단어 대사전":
+    st.title("📕 한방 단어 대사전")
+    st.write("상대를 제압할 수 있는 검증된 끝말잇기 필살기 데이터베이스입니다.")
     
-    search_k = st.text_input("🔍 대사전 내 검색:", "")
+    search_k = st.text_input("🔍 대사전 내 필살기 검색:", "")
     
     if search_k:
         results = [w for w in ALL_KILLER_WORDS if search_k in w]
@@ -391,13 +458,13 @@ elif menu == "📕 한방단어 대사전 (100+)":
                         st.markdown(f"<div class='killer-card'>{word}</div>", unsafe_allow_html=True)
 
 # ==========================================
-# 3. 🔍 네이버 사전 단어/뜻 검색
+# 3. 🔍 네이버 사전 정밀 검색
 # ==========================================
-elif menu == "🔍 네이버 사전 단어/뜻 검색":
-    st.title("🔍 네이버 사전 단어 & 뜻 실시간 검색")
-    st.write("단어가 국어사전에 등록되어 있는지, 연관 단어와 뜻이 무엇인지 확인합니다.")
+elif menu == "🔍 네이버 사전 정밀 검색":
+    st.title("🔍 네이버 사전 실시간 검증 시스템")
+    st.write("단어가 국어사전에 실제 등재되어 있는지 즉시 검색합니다.")
     
-    search_q = st.text_input("검색할 단어를 입력하세요:", "")
+    search_q = st.text_input("검색 단어 입력:", "")
     if search_q:
         res_json = safe_naver_search(search_q)
         if res_json:
@@ -406,59 +473,57 @@ elif menu == "🔍 네이버 사전 단어/뜻 검색":
             for group in items:
                 for item in group:
                     found_words.append(item[0][0])
-            
             found_words = list(dict.fromkeys(found_words))
             
             if found_words:
-                st.success(f"네이버 사전 검색 결과 ({len(found_words)}건 등록됨):")
+                st.success(f"검색 성공 ({len(found_words)}건 검색됨)")
                 for w in found_words:
-                    is_killer = " 💥 [한방 단어]" if w in ALL_KILLER_WORDS or w.endswith(("륨", "늄", "튬", "슘", "뮴", "븀", "슭", "녘", "즘")) else ""
+                    is_killer = " 💥 [한방 단어]" if w in ALL_KILLER_WORDS or w.endswith(("륨", "늄", "튬", "슘", "뮴", "븀", "녘", "즘")) else ""
                     st.markdown(f"""
                     <div class="dict-card">
-                        <h3 style="margin:0; color:#3b82f6;">{w} {is_killer}</h3>
-                        <p style="margin:5px 0 0 0; color:#64748b;">네이버 국어사전 표준 등재 명사</p>
+                        <h3 style="margin:0; color:#00f5d4;">{w} {is_killer}</h3>
+                        <p style="margin:4px 0 0 0; color:#94a3b8;">네이버 국어사전 검증 완료 명사</p>
                     </div>
                     """, unsafe_allow_html=True)
             else:
-                st.error("국어사전에 등재되지 않은 단어입니다.")
+                st.error("사전에 존재하지 않는 단어입니다.")
         else:
-            st.warning("네이버 사전 검색 서비스 연동이 원활하지 않습니다.")
+            st.warning("네이버 사전 통신 네트워크 상태를 확인하세요.")
 
 # ==========================================
-# 4. 🛒 상점 (40종 아이템)
+# 4. 🛒 택티컬 상점 (40종 아이템)
 # ==========================================
-elif menu == "🛒 상점 (40종 아이템)":
-    st.title("🛒 아이템 상점 (40종 세트)")
-    st.write("게임으로 모은 포인트로 칭호, 아바타, 테두리, 테마를 구매해보세요!")
+elif menu == "🛒 택티컬 상점 (40종)":
+    st.title("🛒 TACTICAL ITEM SHOP")
+    st.write("아이템을 구매하고 장착하면 앱 테마, 테두리, 아바타, 칭호가 즉시 변경됩니다.")
 
     shop_items_data = {
         "🏷️ 칭호 (10종)": [
-            ("🐣 끝말잇기 병아리", 0), ("⚡ 뇌섹남", 100), ("⚔️ 끝말잇기 패왕", 200),
-            ("🧪 원소의 지배자", 300), ("👑 국어사전의 신", 500), ("🎯 단어의 연금술사", 600),
-            ("🔥 티키타카 마스터", 700), ("🛡️ 언어의 수호자", 800), ("🚀 우주 대스타", 900), ("🏆 국어대왕", 1000)
+            ("🎖️ 신병 요원", 0), ("⚡ 래디언트 게이머", 150), ("⚔️ 불멸의 듀얼리스트", 300),
+            ("🧪 원소 연금술사", 450), ("👑 국어 챌린저", 600), ("🎯 100% 한방 사수", 750),
+            ("🔥 티키타카 마스터", 900), ("🛡️ 철벽 수비대장", 1000), ("🚀 우주 전설", 1200), ("🏆 바론 베이더", 1500)
         ],
-        "👤 아바타 (10종)": [
-            ("🐣 병아리", 0), ("⚡ 뇌섹남", 100), ("🦁 사자왕", 200),
-            ("🤖 AI 봇", 300), ("🐉 드래곤", 500), ("🐱 냥이", 600),
-            ("🐶 댕댕이", 600), ("🦊 여우", 700), ("🐯 호랑이", 800), ("👑 황제", 1000)
+        "👤 요원 아바타 (10종)": [
+            ("👤 요원 아바타", 0), ("⚡ 네온 아바타", 150), ("🦁 제드 아바타", 300),
+            ("🤖 로봇 요원", 450), ("🐉 드래곤 요원", 600), ("🐱 시커먼 냥이", 750),
+            ("🐶 늑대 요원", 750), ("🦊 미라지 요원", 900), ("🐯 뱅가드 타이거", 1000), ("👑 암살자", 1500)
         ],
-        "🖼️ 프레임 (10종)": [
-            ("기본 프레임", 0), ("🔥 화염 테두리", 100), ("💎 다이아 테두리", 200),
-            ("🌟 은하수 테두리", 300), ("👑 황금 왕관 테두리", 500), ("🌈 무지개 테두리", 600),
-            ("❄️ 얼음 테두리", 700), ("⚡ 번개 테두리", 700), ("🌿 자연 테두리", 800), ("🔮 마법 테두리", 1000)
+        "🖼️ 테두리 프레임 (10종)": [
+            ("기본 프레임", 0), ("🔴 발로란트 레드 테두리", 150), ("🟢 래디언트 네온 테두리", 300),
+            ("🟡 챌린저 테두리", 450), ("🟣 공허 테두리", 600), ("⚔️ 특수부대 테두리", 750),
+            ("❄️ 얼음 테두리", 900), ("⚡ 번개 테두리", 1000), ("🌿 카모 테두리", 1200), ("🔮 흑마법 테두리", 1500)
         ],
-        "🎨 테마 (10종)": [
-            ("기본 테마", 0), ("🌙 딥 다크", 100), ("⚡ 사이버 네온", 200),
-            ("✨ 화려한 골드", 300), ("🌸 핑크 블라썸", 500), ("🌲 포레스트 그린", 600),
-            ("🌊 오션 블루", 700), ("🌆 노을 서셋", 800), ("🍇 바이올렛", 900), ("🍞 따뜻한 카페", 1000)
+        "🎨 UI 테마 (10종)": [
+            ("🔴 발로란트 레드", 0), ("🟢 래디언트 시안", 200), ("🟡 챌린저 골드", 400),
+            ("🟣 공허의 아칼리", 600), ("⚔️ 밀리터리 카키", 800)
         ]
     }
 
     slot_keys = {
         "🏷️ 칭호 (10종)": "equipped_title",
-        "👤 아바타 (10종)": "equipped_avatar",
-        "🖼️ 프레임 (10종)": "equipped_frame",
-        "🎨 테마 (10종)": "equipped_theme"
+        "👤 요원 아바타 (10종)": "equipped_avatar",
+        "🖼️ 테두리 프레임 (10종)": "equipped_frame",
+        "🎨 UI 테마 (10종)": "equipped_theme"
     }
 
     tabs = st.tabs(list(shop_items_data.keys()))
@@ -472,7 +537,7 @@ elif menu == "🛒 상점 (40종 아이템)":
                 with col2:
                     if item_name in st.session_state.inventory:
                         if st.session_state[slot_key] == item_name:
-                            st.success("장착 중")
+                            st.success("장착 완료")
                         else:
                             if st.button("장착하기", key=f"eq_{cat_name}_{item_name}"):
                                 st.session_state[slot_key] = item_name
@@ -489,32 +554,30 @@ elif menu == "🛒 상점 (40종 아이템)":
                                 st.error("포인트 부족!")
 
 # ==========================================
-# 5. 👤 프로필 & 스타일 꾸미기
+# 5. 👤 요원 프로필 & 테마 설정
 # ==========================================
-elif menu == "👤 프로필 & 스타일 꾸미기":
-    st.title("👤 플레이어 프로필")
+elif menu == "👤 요원 프로필 & 테마 설정":
+    st.title("👤 AGENT PROFILE")
     
-    st.subheader("✏️ 닉네임 수정")
-    new_username = st.text_input("새로운 닉네임:", value=st.session_state.user_name)
-    if st.button("💾 닉네임 저장"):
+    st.subheader("✏️ 요원 코드네임 변경")
+    new_username = st.text_input("새 코드네임:", value=st.session_state.user_name)
+    if st.button("💾 코드네임 저장"):
         if new_username.strip():
             st.session_state.user_name = new_username.strip()
             save_user_data()
-            st.success("닉네임이 성공적으로 저장되었습니다!")
+            st.success("코드네임 업데이트 완료!")
             st.rerun()
-        else:
-            st.error("올바른 닉네임을 입력하세요.")
 
     st.markdown("---")
     avatar_icon = st.session_state.equipped_avatar.split()[0]
     st.markdown(f"""
-    <div style="padding: 30px; border-radius: 20px; border: {active_frame}; text-align: center; margin-top: 15px;">
-        <div style="font-size: 80px;">{avatar_icon}</div>
-        <div style="font-size: 20px; font-weight: bold; color: #eab308; margin-top: 10px;">[{st.session_state.equipped_title}]</div>
-        <h1 style="margin: 10px 0;">{st.session_state.user_name}</h1>
-        <p style="font-size: 20px;">🎨 현재 테마: <b>{st.session_state.equipped_theme}</b></p>
-        <p style="font-size: 20px;">🖼️ 현재 프레임: <b>{st.session_state.equipped_frame}</b></p>
-        <p style="font-size: 24px; font-weight: bold; color: #facc15;">💰 보유 포인트: {st.session_state.points} P</p>
+    <div style="padding: 25px; border-radius: 8px; border: {active_frame}; text-align: center; margin-top: 15px; background: rgba(0,0,0,0.4);">
+        <div style="font-size: 75px;">{avatar_icon}</div>
+        <div style="font-size: 18px; font-weight: bold; color: #ff4655; margin-top: 10px;">[{st.session_state.equipped_title}]</div>
+        <h1 style="margin: 10px 0; font-family: 'Orbitron';">{st.session_state.user_name}</h1>
+        <p style="font-size: 18px;">🎨 장착 테마: <b>{st.session_state.equipped_theme}</b></p>
+        <p style="font-size: 18px;">🖼️ 장착 테두리: <b>{st.session_state.equipped_frame}</b></p>
+        <p style="font-size: 22px; font-weight: bold; color: #f59e0b;">💰 CREDITS: {st.session_state.points} P</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -522,8 +585,8 @@ elif menu == "👤 프로필 & 스타일 꾸미기":
 # 6. 🧪 원소 주기율표 (1~118)
 # ==========================================
 elif menu == "🧪 원소 주기율표 (1~118)":
-    st.title("🧪 원소 주기율표 (1~118 완벽 수록)")
-    search_elem = st.text_input("원소 이름 또는 기호 검색 (예: 수소, H, Na, 바나듐):", "")
+    st.title("🧪 원소 주기율표 (1~118 DATABASE)")
+    search_elem = st.text_input("원소 명칭 또는 기호 검색 (예: H, 수소, Na):", "")
     
     filtered = [e for e in ELEMENTS_DATA if search_elem in e[2] or search_elem.lower() in e[1].lower()]
     cols = st.columns(3)
@@ -531,10 +594,10 @@ elif menu == "🧪 원소 주기율표 (1~118)":
         with cols[idx % 3]:
             is_k = name.endswith(("륨", "늄", "튬", "슘", "뮴"))
             st.markdown(f"""
-            <div style="border: 2px solid {'#ef4444' if is_k else '#4b5563'}; border-radius: 12px; padding: 15px; margin-bottom: 12px; text-align: center;">
-                <span style="font-size: 14px; color: #888;">No.{num} [{cat}]</span>
-                <h2 style="margin: 5px 0;">{sym}</h2>
-                <span style="font-size: 22px; font-weight: bold;">{name}</span>
-                {('<br/><span style="color:#ef4444; font-weight:bold;">💥 한방 단어 사용 가능</span>' if is_k else '')}
+            <div style="border: 2px solid {'#ef4444' if is_k else '#475569'}; border-radius: 6px; padding: 12px; margin-bottom: 10px; text-align: center; background: rgba(0,0,0,0.3);">
+                <span style="font-size: 13px; color: #94a3b8;">No.{num} [{cat}]</span>
+                <h2 style="margin: 4px 0; color: #00f5d4; font-family: 'Orbitron';">{sym}</h2>
+                <span style="font-size: 20px; font-weight: bold; color: #f8fafc;">{name}</span>
+                {('<br/><span style="color:#ef4444; font-weight:bold; font-size:14px;">💥 한방 단어</span>' if is_k else '')}
             </div>
             """, unsafe_allow_html=True)
