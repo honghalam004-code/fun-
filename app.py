@@ -56,48 +56,48 @@ if "data_loaded" not in st.session_state:
     st.session_state.data_loaded = True
 
 # ==========================================
-# 🎨 다이내믹 게이밍 UI / 테마 배경 엔진
+# 🎨 선명한 고대비 UI / 테마 엔진
 # ==========================================
 THEME_CONFIGS = {
     "🔴 발로란트 레드": {
-        "bg_css": "background: radial-gradient(circle at 50% 10%, #2b0910 0%, #0f1923 80%) !important;",
-        "card_bg": "rgba(255, 70, 85, 0.08)",
+        "bg_css": "linear-gradient(135deg, #1a0509 0%, #0f1923 100%)",
+        "card_bg": "rgba(20, 26, 35, 0.95)",
         "accent": "#ff4655",
-        "text": "#ece8e1"
+        "text": "#ffffff"
     },
     "🟢 래디언트 시안": {
-        "bg_css": "background: radial-gradient(circle at 50% 10%, #043831 0%, #061417 80%) !important;",
-        "card_bg": "rgba(0, 245, 212, 0.08)",
+        "bg_css": "linear-gradient(135deg, #021a17 0%, #061417 100%)",
+        "card_bg": "rgba(12, 30, 35, 0.95)",
         "accent": "#00f5d4",
-        "text": "#dbf8ff"
+        "text": "#ffffff"
     },
     "🟡 챌린저 골드": {
-        "bg_css": "background: radial-gradient(circle at 50% 10%, #3b2807 0%, #120e07 80%) !important;",
-        "card_bg": "rgba(245, 158, 11, 0.08)",
-        "accent": "#f59e0b",
-        "text": "#f7e7c4"
+        "bg_css": "linear-gradient(135deg, #1c1303 0%, #120e07 100%)",
+        "card_bg": "rgba(30, 24, 15, 0.95)",
+        "accent": "#fbbf24",
+        "text": "#ffffff"
     },
     "🟣 공허의 아칼리": {
-        "bg_css": "background: radial-gradient(circle at 50% 10%, #2e104d 0%, #0f081c 80%) !important;",
-        "card_bg": "rgba(168, 85, 247, 0.08)",
-        "accent": "#a855f7",
-        "text": "#e9d8a6"
+        "bg_css": "linear-gradient(135deg, #170829 0%, #0f081c 100%)",
+        "card_bg": "rgba(25, 16, 42, 0.95)",
+        "accent": "#c084fc",
+        "text": "#ffffff"
     },
     "⚔️ 밀리터리 카키": {
-        "bg_css": "background: radial-gradient(circle at 50% 10%, #252e17 0%, #11140c 80%) !important;",
-        "card_bg": "rgba(132, 204, 22, 0.08)",
-        "accent": "#84cc16",
-        "text": "#e2e8f0"
+        "bg_css": "linear-gradient(135deg, #12170b 0%, #0c1007 100%)",
+        "card_bg": "rgba(22, 28, 18, 0.95)",
+        "accent": "#a3e635",
+        "text": "#ffffff"
     }
 }
 
 FRAME_STYLES = {
-    "기본 프레임": "2px solid #475569",
+    "기본 프레임": "2px solid #64748b",
     "🔴 발로란트 레드 테두리": "3px solid #ff4655",
     "🟢 래디언트 네온 테두리": "3px solid #00f5d4",
-    "🟡 챌린저 테두리": "3px solid #f59e0b",
-    "🟣 공허 테두리": "3px solid #a855f7",
-    "⚔️ 특수부대 테두리": "3px solid #84cc16"
+    "🟡 챌린저 테두리": "3px solid #fbbf24",
+    "🟣 공허 테두리": "3px solid #c084fc",
+    "⚔️ 특수부대 테두리": "3px solid #a3e635"
 }
 
 cur_theme = THEME_CONFIGS.get(st.session_state.equipped_theme, THEME_CONFIGS["🔴 발로란트 레드"])
@@ -107,63 +107,95 @@ st.markdown(f"""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap');
 
-    /* 배경 레이어 강제 적용 */
+    /* 전체 배경 스타일 */
     .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {{
-        {cur_theme['bg_css']}
-        color: {cur_theme['text']} !important;
+        background: {cur_theme['bg_css']} !important;
+        color: #ffffff !important;
     }}
     
+    /* 사이드바 가시성 */
     [data-testid="stSidebar"] {{
-        background-color: rgba(0, 0, 0, 0.5) !important;
-        border-right: 1px solid {cur_theme['accent']}44;
+        background-color: #0b0f17 !important;
+        border-right: 2px solid {cur_theme['accent']}66;
     }}
     
+    /* 본문 텍스트 강제 고대비 처리 */
+    p, span, label, div, .stMarkdown {{
+        color: #f8fafc !important;
+        font-weight: 500;
+    }}
+    
+    h1, h2, h3, h4 {{
+        color: #ffffff !important;
+        font-weight: 800 !important;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    }}
+
+    /* 채팅 메시지 패널 가독성 */
     .stChatMessage {{
         background-color: {cur_theme['card_bg']} !important;
-        border-radius: 8px !important;
-        border: 1px solid {cur_theme['accent']}44 !important;
-        backdrop-filter: blur(5px);
+        border-radius: 10px !important;
+        border: 1px solid {cur_theme['accent']}aa !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }}
+    .stChatMessage p {{
+        color: #ffffff !important;
+        font-size: 16px !important;
     }}
     
+    /* 버튼 텍스트 가시성 */
     .stButton>button {{
-        background: linear-gradient(135deg, {cur_theme['accent']} 0%, #000000 160%) !important;
+        background: {cur_theme['accent']} !important;
+        color: #000000 !important;
+        border: none !important;
+        font-weight: 900 !important;
+        border-radius: 6px !important;
+        padding: 8px 16px !important;
+        box-shadow: 0 0 10px {cur_theme['accent']}88;
+    }}
+    .stButton>button:hover {{
+        filter: brightness(1.2);
+    }}
+    
+    /* 입력창 가독성 극대화 */
+    input[type="text"] {{
+        background-color: #0f172a !important;
         color: #ffffff !important;
         border: 1px solid {cur_theme['accent']} !important;
-        font-weight: 800 !important;
-        border-radius: 4px !important;
-        box-shadow: 0 0 12px {cur_theme['accent']}66;
+        border-radius: 6px !important;
     }}
     
+    /* 커스텀 카드 패널 (선명한 배경 지정) */
     .tactical-badge {{
-        background: {cur_theme['card_bg']};
+        background: #0f172a;
         border: 2px solid {cur_theme['accent']};
-        color: {cur_theme['accent']};
+        color: {cur_theme['accent']} !important;
         padding: 14px;
-        border-radius: 6px;
+        border-radius: 8px;
         text-align: center;
         font-family: 'Orbitron', sans-serif;
         font-size: 24px;
         font-weight: 900;
         margin-bottom: 15px;
-        box-shadow: inset 0 0 15px {cur_theme['accent']}33;
     }}
 
     .killer-card {{
-        background: rgba(0,0,0,0.4);
-        border-left: 4px solid #ef4444;
-        padding: 8px 12px;
+        background: #0f172a !important;
+        border-left: 4px solid #ef4444 !important;
+        border: 1px solid #334155;
+        padding: 10px 14px;
         margin: 4px 0;
         font-weight: bold;
-        color: #f8fafc;
-        border-radius: 0 4px 4px 0;
+        color: #ffffff !important;
+        border-radius: 4px;
     }}
 
     .elem-card {{
-        border: 1px solid {cur_theme['accent']}66;
-        border-radius: 6px;
-        padding: 10px;
+        border: 1px solid {cur_theme['accent']}88;
+        border-radius: 8px;
+        padding: 12px;
         text-align: center;
-        background: rgba(0,0,0,0.3);
+        background: #0f172a !important;
         margin-bottom: 8px;
     }}
 </style>
@@ -190,7 +222,7 @@ def get_allowed_initials(char):
     return list(dict.fromkeys(allowed))
 
 # ==========================================
-# 📕 한방 단어 100선 (완전한 정품 명사 데이터)
+# 📕 한방 단어 100선
 # ==========================================
 MASSIVE_KILLER_DICTIONARY = {
     "륨 계열 💥": [
@@ -217,7 +249,7 @@ MASSIVE_KILLER_DICTIONARY = {
 ALL_KILLER_WORDS = list(set([w for group in MASSIVE_KILLER_DICTIONARY.values() for w in group]))
 
 # ==========================================
-# 🧪 원소 주기율표 데이터 (1~118 풀 세트)
+# 🧪 원소 주기율표 데이터 (1~118)
 # ==========================================
 ELEMENTS_DATA = [
     (1, "H", "수소", "기체"), (2, "He", "헬륨", "기체"), (3, "Li", "리튬", "고체"), (4, "Be", "베릴륨", "고체"),
@@ -253,7 +285,7 @@ ELEMENTS_DATA = [
 ]
 
 # ==========================================
-# 📚 완전 방어 오프라인 백업 사전 (표, 차 등 연속 단어 보장)
+# 📚 완전 방어 오프라인 백업 사전
 # ==========================================
 MEGA_FALLBACK_DICTIONARY = {
     "표": ["표정", "표지판", "표범", "표준", "표적", "표류", "표면", "표현", "표제어", "표상", "표인", "표목"],
@@ -271,7 +303,6 @@ MEGA_FALLBACK_DICTIONARY = {
     "사": ["사자", "사과", "사슴", "사탕", "사이다", "사막", "사람", "사진"]
 }
 
-# 에러 메시지 팝업 노출 없이 조용히 통신 처리
 def safe_naver_search(query):
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
     url = f"https://dict.naver.com/api/search/autocomplete?query={query}&st=11111"
@@ -289,7 +320,6 @@ def is_valid_korean_word(word):
         for group in res_json.get("items", []):
             for item in group:
                 if item[0][0] == word: return True
-    # 네이버 통신 불안정 시 오프라인 데이터 및 한글 검증
     first_char = word[0]
     if first_char in MEGA_FALLBACK_DICTIONARY and word in MEGA_FALLBACK_DICTIONARY[first_char]:
         return True
@@ -353,7 +383,7 @@ def reset_game():
 if "chat_history" not in st.session_state: reset_game()
 
 # ==========================================
-# 📌 메인 네비게이션 메뉴
+# 📌 네비게이션
 # ==========================================
 st.sidebar.markdown(f"""
 <div class="tactical-badge">
@@ -471,19 +501,18 @@ elif menu == "🧪 원소 주기율표 (1~118)":
             is_k = name.endswith(("륨", "늄", "튬", "슘", "뮴"))
             st.markdown(f"""
             <div class="elem-card">
-                <span style="font-size: 12px; color: #94a3b8;">No.{num} [{state}]</span>
-                <h2 style="margin: 2px 0; color: {cur_theme['accent']}; font-family: 'Orbitron';">{sym}</h2>
-                <span style="font-size: 18px; font-weight: bold; color: #f8fafc;">{name}</span>
+                <span style="font-size: 13px; color: #94a3b8; font-weight: bold;">No.{num} [{state}]</span>
+                <h2 style="margin: 4px 0; color: {cur_theme['accent']}; font-family: 'Orbitron'; font-size: 28px;">{sym}</h2>
+                <span style="font-size: 18px; font-weight: bold; color: #ffffff;">{name}</span>
                 {('<br/><span style="color:#ef4444; font-weight:bold; font-size:12px;">💥 한방단어</span>' if is_k else '')}
             </div>
             """, unsafe_allow_html=True)
 
 # ==========================================
-# 4. 🛒 택티컬 상점 (실시간 배경 반영)
+# 4. 🛒 택티컬 상점
 # ==========================================
 elif menu == "🛒 택티컬 상점 (실시간 배경)":
     st.title("🛒 TACTICAL ITEM SHOP")
-    st.caption("구매 및 장착 즉시 게임 전체 배경과 비주얼 테마 스타일이 변경됩니다.")
 
     shop_data = {
         "🎨 전체 UI 테마 배경": [
@@ -541,12 +570,12 @@ elif menu == "👤 프로필 & 스타일 설정":
     
     avatar_icon = st.session_state.equipped_avatar.split()[0]
     st.markdown(f"""
-    <div style="padding: 30px; border-radius: 10px; border: {cur_frame}; text-align: center; background: rgba(0,0,0,0.4); margin-top: 15px;">
+    <div style="padding: 30px; border-radius: 10px; border: {cur_frame}; text-align: center; background: #0f172a; margin-top: 15px;">
         <div style="font-size: 80px;">{avatar_icon}</div>
         <div style="font-size: 20px; font-weight: bold; color: {cur_theme['accent']}; margin-top: 10px;">[{st.session_state.equipped_title}]</div>
-        <h1 style="margin: 10px 0; font-family: 'Orbitron';">{st.session_state.user_name}</h1>
-        <p style="font-size: 18px;">🎨 장착 테마 배경: <b>{st.session_state.equipped_theme}</b></p>
-        <p style="font-size: 18px;">🖼️ 장착 테두리: <b>{st.session_state.equipped_frame}</b></p>
-        <p style="font-size: 22px; font-weight: bold; color: #f59e0b;">💰 보유 포인트: {st.session_state.points} P</p>
+        <h1 style="margin: 10px 0; font-family: 'Orbitron'; color: #ffffff;">{st.session_state.user_name}</h1>
+        <p style="font-size: 18px; color: #ffffff;">🎨 장착 테마 배경: <b>{st.session_state.equipped_theme}</b></p>
+        <p style="font-size: 18px; color: #ffffff;">🖼️ 장착 테두리: <b>{st.session_state.equipped_frame}</b></p>
+        <p style="font-size: 22px; font-weight: bold; color: #fbbf24;">💰 보유 포인트: {st.session_state.points} P</p>
     </div>
     """, unsafe_allow_html=True)
