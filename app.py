@@ -4,7 +4,7 @@ import random
 import json
 import os
 
-st.set_page_config(page_title="TACTICAL WORD CHAIN PRO", page_icon="⚔️", layout="wide")
+st.set_page_config(page_title="끝말잇기 PRO", page_icon="⚔️", layout="wide")
 
 # ==========================================
 # 💾 데이터 영구 저장 로직
@@ -14,12 +14,12 @@ SAVE_FILE = "user_tactical_data.json"
 def load_user_data():
     default_data = {
         "user_name": "요원_01",
-        "points": 3000,
-        "inventory": ["🎖️ 신병 요원", "👤 기본 요원", "기본 프레임", "🔴 발로란트 레드"],
-        "equipped_theme": "🔴 발로란트 레드",
+        "points": 5000,
+        "inventory": ["🎖️ 신병", "👤 기본 요원", "기본 프레임", "🔴 레드 테마"],
+        "equipped_theme": "🔴 레드 테마",
         "equipped_avatar": "👤 기본 요원",
         "equipped_frame": "기본 프레임",
-        "equipped_title": "🎖️ 신병 요원",
+        "equipped_title": "🎖️ 신병",
     }
     if os.path.exists(SAVE_FILE):
         try:
@@ -59,126 +59,142 @@ if "data_loaded" not in st.session_state:
 # 🎨 선명한 고대비 UI / 테마 엔진
 # ==========================================
 THEME_CONFIGS = {
-    "🔴 발로란트 레드": {
+    "🔴 레드 테마": {
         "bg_css": "linear-gradient(135deg, #1a0509 0%, #0f1923 100%)",
-        "card_bg": "rgba(20, 26, 35, 0.95)",
+        "card_bg": "#1e293b",
         "accent": "#ff4655",
         "text": "#ffffff"
     },
-    "🟢 래디언트 시안": {
+    "🟢 네온 시안": {
         "bg_css": "linear-gradient(135deg, #021a17 0%, #061417 100%)",
-        "card_bg": "rgba(12, 30, 35, 0.95)",
+        "card_bg": "#1e293b",
         "accent": "#00f5d4",
         "text": "#ffffff"
     },
     "🟡 챌린저 골드": {
         "bg_css": "linear-gradient(135deg, #1c1303 0%, #120e07 100%)",
-        "card_bg": "rgba(30, 24, 15, 0.95)",
+        "card_bg": "#1e293b",
         "accent": "#fbbf24",
         "text": "#ffffff"
     },
-    "🟣 공허의 아칼리": {
+    "🟣 퍼플 보이드": {
         "bg_css": "linear-gradient(135deg, #170829 0%, #0f081c 100%)",
-        "card_bg": "rgba(25, 16, 42, 0.95)",
+        "card_bg": "#1e293b",
         "accent": "#c084fc",
         "text": "#ffffff"
     },
-    "⚔️ 밀리터리 카키": {
-        "bg_css": "linear-gradient(135deg, #12170b 0%, #0c1007 100%)",
-        "card_bg": "rgba(22, 28, 18, 0.95)",
-        "accent": "#a3e635",
+    "🌸 사쿠라 핑크": {
+        "bg_css": "linear-gradient(135deg, #2a0818 0%, #15050f 100%)",
+        "card_bg": "#1e293b",
+        "accent": "#f472b6",
+        "text": "#ffffff"
+    },
+    "🌊 다크 오션": {
+        "bg_css": "linear-gradient(135deg, #031b29 0%, #050f1a 100%)",
+        "card_bg": "#1e293b",
+        "accent": "#38bdf8",
         "text": "#ffffff"
     }
 }
 
 FRAME_STYLES = {
     "기본 프레임": "2px solid #64748b",
-    "🔴 발로란트 레드 테두리": "3px solid #ff4655",
-    "🟢 래디언트 네온 테두리": "3px solid #00f5d4",
-    "🟡 챌린저 테두리": "3px solid #fbbf24",
-    "🟣 공허 테두리": "3px solid #c084fc",
-    "⚔️ 특수부대 테두리": "3px solid #a3e635"
+    "🔴 강렬한 레드 테두리": "3px solid #ff4655",
+    "🟢 빛나는 네온 테두리": "3px solid #00f5d4",
+    "🟡 황금 챔피언 테두리": "3px solid #fbbf24",
+    "🟣 공허의 아우라 테두리": "3px solid #c084fc",
+    "💎 다이아몬드 테두리": "3px solid #38bdf8",
+    "🔥 불꽃 네온 테두리": "3px solid #f97316"
 }
 
-cur_theme = THEME_CONFIGS.get(st.session_state.equipped_theme, THEME_CONFIGS["🔴 발로란트 레드"])
+cur_theme = THEME_CONFIGS.get(st.session_state.equipped_theme, THEME_CONFIGS["🔴 레드 테마"])
 cur_frame = FRAME_STYLES.get(st.session_state.equipped_frame, FRAME_STYLES["기본 프레임"])
 
 st.markdown(f"""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&display=swap');
 
-    /* 전체 배경 스타일 */
+    * {{
+        font-family: 'Pretendard', sans-serif;
+    }}
+
+    /* 전체 배경 */
     .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {{
         background: {cur_theme['bg_css']} !important;
         color: #ffffff !important;
     }}
     
-    /* 사이드바 가시성 */
+    /* 사이드바 */
     [data-testid="stSidebar"] {{
-        background-color: #0b0f17 !important;
-        border-right: 2px solid {cur_theme['accent']}66;
+        background-color: #090d16 !important;
+        border-right: 2px solid {cur_theme['accent']}55;
     }}
     
-    /* 본문 텍스트 강제 고대비 처리 */
+    /* 본문 텍스트 강제 흰색 */
     p, span, label, div, .stMarkdown {{
         color: #f8fafc !important;
-        font-weight: 500;
     }}
     
     h1, h2, h3, h4 {{
         color: #ffffff !important;
         font-weight: 800 !important;
-        text-shadow: 0 2px 4px rgba(0,0,0,0.8);
     }}
 
-    /* 채팅 메시지 패널 가독성 */
+    /* 채팅 메시지 패널 */
     .stChatMessage {{
-        background-color: {cur_theme['card_bg']} !important;
-        border-radius: 10px !important;
+        background-color: #1e293b !important;
+        border-radius: 12px !important;
         border: 1px solid {cur_theme['accent']}aa !important;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     }}
     .stChatMessage p {{
         color: #ffffff !important;
         font-size: 16px !important;
     }}
+
+    /* 💥 [핵심] 입력창(st.chat_input & input) 타핑 글씨 선명하게 고정 */
+    [data-testid="stChatInput"] textarea, 
+    [data-testid="stChatInput"] input,
+    div[data-baseweb="input"] input {{
+        color: #ffffff !important;
+        background-color: #0f172a !important;
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        -webkit-text-fill-color: #ffffff !important;
+    }}
     
-    /* 버튼 텍스트 가시성 */
+    [data-testid="stChatInput"] {{
+        background-color: #0f172a !important;
+        border: 2px solid {cur_theme['accent']} !important;
+        border-radius: 10px !important;
+    }}
+
+    /* 일반 버튼 */
     .stButton>button {{
         background: {cur_theme['accent']} !important;
         color: #000000 !important;
         border: none !important;
-        font-weight: 900 !important;
-        border-radius: 6px !important;
+        font-weight: 800 !important;
+        border-radius: 8px !important;
         padding: 8px 16px !important;
-        box-shadow: 0 0 10px {cur_theme['accent']}88;
     }}
     .stButton>button:hover {{
         filter: brightness(1.2);
     }}
     
-    /* 입력창 가독성 극대화 */
-    input[type="text"] {{
-        background-color: #0f172a !important;
-        color: #ffffff !important;
-        border: 1px solid {cur_theme['accent']} !important;
-        border-radius: 6px !important;
-    }}
-    
-    /* 커스텀 카드 패널 (선명한 배경 지정) */
-    .tactical-badge {{
+    /* 포인트 표시 배지 */
+    .point-badge {{
         background: #0f172a;
         border: 2px solid {cur_theme['accent']};
         color: {cur_theme['accent']} !important;
-        padding: 14px;
-        border-radius: 8px;
+        padding: 12px;
+        border-radius: 10px;
         text-align: center;
-        font-family: 'Orbitron', sans-serif;
-        font-size: 24px;
+        font-size: 22px;
         font-weight: 900;
         margin-bottom: 15px;
     }}
 
+    /* 사전 카드 디자인 */
     .killer-card {{
         background: #0f172a !important;
         border-left: 4px solid #ef4444 !important;
@@ -187,16 +203,16 @@ st.markdown(f"""
         margin: 4px 0;
         font-weight: bold;
         color: #ffffff !important;
-        border-radius: 4px;
+        border-radius: 6px;
     }}
 
-    .elem-card {{
-        border: 1px solid {cur_theme['accent']}88;
-        border-radius: 8px;
-        padding: 12px;
-        text-align: center;
-        background: #0f172a !important;
-        margin-bottom: 8px;
+    /* 상점 품목 카드 */
+    .shop-item-card {{
+        background-color: #1e293b !important;
+        border: 1px solid {cur_theme['accent']}66;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 12px;
     }}
 </style>
 """, unsafe_allow_html=True)
@@ -248,59 +264,19 @@ MASSIVE_KILLER_DICTIONARY = {
 
 ALL_KILLER_WORDS = list(set([w for group in MASSIVE_KILLER_DICTIONARY.values() for w in group]))
 
-# ==========================================
-# 🧪 원소 주기율표 데이터 (1~118)
-# ==========================================
-ELEMENTS_DATA = [
-    (1, "H", "수소", "기체"), (2, "He", "헬륨", "기체"), (3, "Li", "리튬", "고체"), (4, "Be", "베릴륨", "고체"),
-    (5, "B", "붕소", "고체"), (6, "C", "탄소", "고체"), (7, "N", "질소", "기체"), (8, "O", "산소", "기체"),
-    (9, "F", "플루오린", "기체"), (10, "Ne", "네온", "기체"), (11, "Na", "나트륨", "고체"), (12, "Mg", "마그네슘", "고체"),
-    (13, "Al", "알루미늄", "고체"), (14, "Si", "규소", "고체"), (15, "P", "인", "고체"), (16, "S", "황", "고체"),
-    (17, "Cl", "염소", "기체"), (18, "Ar", "아르곤", "기체"), (19, "K", "칼륨", "고체"), (20, "Ca", "칼슘", "고체"),
-    (21, "Sc", "스칸듐", "고체"), (22, "Ti", "티타늄", "고체"), (23, "V", "바나듐", "고체"), (24, "Cr", "크롬", "고체"),
-    (25, "Mn", "망가니즈", "고체"), (26, "Fe", "철", "고체"), (27, "Co", "코발트", "고체"), (28, "Ni", "니켈", "고체"),
-    (29, "Cu", "구리", "고체"), (30, "Zn", "아연", "고체"), (31, "Ga", "갈륨", "고체"), (32, "Ge", "저마늄", "고체"),
-    (33, "As", "비소", "고체"), (34, "Se", "셀레늄", "고체"), (35, "Br", "브로민", "액체"), (36, "Kr", "크립톤", "기체"),
-    (37, "Rb", "루비듐", "고체"), (38, "Sr", "스트론튬", "고체"), (39, "Y", "이트륨", "고체"), (40, "Zr", "지르코늄", "고체"),
-    (41, "Nb", "나이오븀", "고체"), (42, "Mo", "몰리브데넘", "고체"), (43, "Tc", "테크네튬", "고체"), (44, "Ru", "루테늄", "고체"),
-    (45, "Rh", "로듐", "고체"), (46, "Pd", "팔라듐", "고체"), (47, "Ag", "은", "고체"), (48, "Cd", "카드뮴", "고체"),
-    (49, "In", "인듐", "고체"), (50, "Sn", "주석", "고체"), (51, "Sb", "안티몬", "고체"), (52, "Te", "텔루륨", "고체"),
-    (53, "I", "아이오딘", "고체"), (54, "Xe", "제논", "기체"), (55, "Cs", "세슘", "고체"), (56, "Ba", "바륨", "고체"),
-    (57, "La", "란타넘", "고체"), (58, "Ce", "세륨", "고체"), (59, "Pr", "프라세오디뮴", "고체"), (60, "Nd", "네오디뮴", "고체"),
-    (61, "Pm", "프로메튬", "고체"), (62, "Sm", "사마륨", "고체"), (63, "Eu", "유로퓸", "고체"), (64, "Gd", "가돌리늄", "고체"),
-    (65, "Tb", "테르븀", "고체"), (66, "Dy", "디스프로슘", "고체"), (67, "Ho", "홀뮴", "고체"), (68, "Er", "에르븀", "고체"),
-    (69, "Tm", "툴륨", "고체"), (70, "Yb", "이테르븀", "고체"), (71, "Lu", "루테튬", "고체"), (72, "Hf", "하프늄", "고체"),
-    (73, "Ta", "탄탈럼", "고체"), (74, "W", "텅스텐", "고체"), (75, "Re", "레늄", "고체"), (76, "Os", "오스뮴", "고체"),
-    (77, "Ir", "이리듐", "고체"), (78, "Pt", "백금", "고체"), (79, "Au", "금", "고체"), (80, "Hg", "수은", "액체"),
-    (81, "Tl", "탈륨", "고체"), (82, "Pb", "납", "고체"), (83, "Bi", "비스무트", "고체"), (84, "Po", "폴로늄", "고체"),
-    (85, "At", "아스타틴", "고체"), (86, "Rn", "라돈", "기체"), (87, "Fr", "프랑슘", "고체"), (88, "Ra", "라듐", "고체"),
-    (89, "Ac", "악티늄", "고체"), (90, "Th", "토륨", "고체"), (91, "Pa", "프로트악티늄", "고체"), (92, "U", "우라늄", "고체"),
-    (93, "Np", "넵튜늄", "고체"), (94, "Pu", "플루토늄", "고체"), (95, "Am", "아메리슘", "고체"), (96, "Cm", "퀴륨", "고체"),
-    (97, "Bk", "버클륨", "고체"), (98, "Cf", "캘리포늄", "고체"), (99, "Es", "아인슈타이늄", "고체"), (100, "Fm", "페르븀", "고체"),
-    (101, "Md", "멘델레븀", "고체"), (102, "No", "노벨륨", "고체"), (103, "Lr", "로렌슘", "고체"), (104, "Rf", "러더포듐", "고체"),
-    (105, "Db", "더브늄", "고체"), (106, "Sg", "시보귬", "고체"), (107, "Bh", "보륨", "고체"), (108, "Hs", "하슘", "고체"),
-    (109, "Mt", "마이트너륨", "고체"), (110, "Ds", "다름슈타튬", "고체"), (111, "Rg", "뢴트게늄", "고체"), (112, "Cn", "코페르니슘", "고체"),
-    (113, "Nh", "니호늄", "고체"), (114, "Fl", "플레로븀", "고체"), (115, "Mc", "모스코븀", "고체"), (116, "Lv", "리버모륨", "고체"),
-    (117, "Ts", "테네신", "고체"), (118, "Og", "오가네손", "기체")
-]
-
-# ==========================================
-# 📚 완전 방어 오프라인 백업 사전
-# ==========================================
 MEGA_FALLBACK_DICTIONARY = {
-    "표": ["표정", "표지판", "표범", "표준", "표적", "표류", "표면", "표현", "표제어", "표상", "표인", "표목"],
-    "차": ["차표", "차창", "차나무", "차고지", "차선", "차돌", "차량", "차고", "차지", "차림표"],
-    "리": ["리본", "리듬", "리코더", "리모컨", "리조트", "리갈", "리액션", "리필", "리얼리티", "리허설"],
-    "이": ["이야기", "이발소", "이유", "이불", "이웃", "이메일", "이탈리아", "이동", "이구아나", "이발사"],
-    "기": ["기차", "기린", "기타", "기와", "기구", "기사", "기름", "기적", "기업", "기계"],
-    "구": ["구름", "구두", "구슬", "구경", "구조대", "구역", "구경꾼", "구식", "구원자"],
+    "표": ["표정", "표지판", "표범", "표준", "표적", "표류", "표면", "표현", "표제어"],
+    "차": ["차표", "차창", "차나무", "차고지", "차선", "차돌", "차량", "차고", "차지"],
+    "리": ["리본", "리듬", "리코더", "리모컨", "리조트", "리갈", "리액션", "리필"],
+    "이": ["이야기", "이발소", "이유", "이불", "이웃", "이메일", "이탈리아", "이동"],
+    "기": ["기차", "기린", "기타", "기와", "기구", "기사", "기름", "기적", "기업"],
+    "구": ["구름", "구두", "구슬", "구경", "구조대", "구역", "구경꾼", "구식"],
     "음": ["음악", "음식", "음료수", "음성", "음향", "음자리표", "음반"],
-    "바": ["바다", "바나나", "바구니", "바람", "바위", "바질", "바코드", "바리스타"],
-    "다": ["다람쥐", "다리", "다리미", "다이아몬드", "다이빙", "다짐", "다이어리"],
-    "자": ["자전거", "자두", "자동차", "자석", "자라", "자존심", "자연", "자유"],
+    "바": ["바다", "바나나", "바구니", "바람", "바위", "바질", "바코드"],
+    "다": ["다람쥐", "다리", "다리미", "다이아몬드", "다이빙", "다짐"],
+    "자": ["자전거", "자두", "자동차", "자석", "자라", "자존심", "자연"],
     "호": ["호랑이", "호수", "호두", "호박", "호루라기", "호텔", "호기심"],
-    "장": ["장난감", "장미", "장갑", "장화", "장터", "장수풍뎅이"],
-    "사": ["사자", "사과", "사슴", "사탕", "사이다", "사막", "사람", "사진"]
+    "사": ["사자", "사과", "사슴", "사탕", "사이다", "사막", "사람"]
 }
 
 def safe_naver_search(query):
@@ -369,7 +345,7 @@ def get_bot_response_word(start_chars, used_words, difficulty):
 
     return random.choice(candidates)
 
-STARTING_WORDS = ["바다", "하늘", "구름", "기차", "자전거", "호랑이", "사자", "비행기", "컴퓨터", "사과", "차표", "표지판", "이야기"]
+STARTING_WORDS = ["바다", "하늘", "구름", "기차", "자전거", "호랑이", "사자", "비행기", "컴퓨터", "사과", "차표"]
 
 def reset_game():
     first_word = random.choice(STARTING_WORDS)
@@ -386,31 +362,30 @@ if "chat_history" not in st.session_state: reset_game()
 # 📌 네비게이션
 # ==========================================
 st.sidebar.markdown(f"""
-<div class="tactical-badge">
-    CREDITS: {st.session_state.points} P
+<div class="point-badge">
+    💰 {st.session_state.points} P
 </div>
 """, unsafe_allow_html=True)
 
-menu = st.sidebar.radio("COMMAND CENTER", [
+menu = st.sidebar.radio("메뉴 선택", [
     "⚔️ 끝말잇기 매치", 
-    "📕 한방 단어 대사전 (100+)",
-    "🧪 원소 주기율표 (1~118)",
-    "🛒 택티컬 상점 (실시간 배경)",
-    "👤 프로필 & 스타일 설정"
+    "🛒 상점",
+    "📕 한방 단어 대사전",
+    "👤 내 프로필"
 ])
 
 # ==========================================
 # 1. ⚔️ 끝말잇기 매치
 # ==========================================
 if menu == "⚔️ 끝말잇기 매치":
-    st.title("⚔️ TACTICAL WORD CHAIN MATCH")
+    st.title("⚔️ 끝말잇기 매치")
     
     col_diff, col_reset = st.columns([3, 1])
     with col_diff:
-        difficulty = st.select_slider("⚙️ 봇 AI 난이도 설정:", options=["쉬움", "보통", "어려움", "매우 어려움"], value="보통")
+        difficulty = st.select_slider("⚙️ AI 난이도:", options=["쉬움", "보통", "어려움", "매우 어려움"], value="보통")
     with col_reset:
         st.write(" ")
-        if st.button("🔄 매치 초기화"):
+        if st.button("🔄 게임 재시작"):
             reset_game()
             st.rerun()
 
@@ -423,7 +398,7 @@ if menu == "⚔️ 끝말잇기 매치":
     allowed_str = '/'.join(allowed_chars)
 
     if not st.session_state.game_over:
-        user_input = st.chat_input(f"'{allowed_str}' (으)로 시작하는 단어 입력...")
+        user_input = st.chat_input(f"'{allowed_str}' (으)로 시작하는 단어를 입력하세요...")
         if user_input:
             user_clean = user_input.strip()
             st.session_state.chat_history.append({"role": "user", "text": user_clean})
@@ -448,7 +423,7 @@ if menu == "⚔️ 끝말잇기 매치":
                 bot_word = get_bot_response_word(bot_next_chars, st.session_state.used_words, difficulty)
 
                 if bot_word is None:
-                    st.session_state.chat_history.append({"role": "bot", "text": f"💥 **'{user_clean}'** 공격 성공! 봇이 대응 단어를 찾지 못했습니다. 승리! (+200P)"})
+                    st.session_state.chat_history.append({"role": "bot", "text": f"💥 **'{user_clean}'** 승리! 대응 단어가 없습니다. (+200P)"})
                     st.session_state.points += 200
                     st.session_state.game_over = True
                     save_user_data()
@@ -459,20 +434,88 @@ if menu == "⚔️ 끝말잇기 매치":
                     st.session_state.points += 10
                     save_user_data()
                     next_allowed = '/'.join(get_allowed_initials(bot_word[-1]))
-                    st.session_state.chat_history.append({"role": "bot", "text": f"⚡ 봇 수비: **'{bot_word}'**! 다음 시작어: **'{next_allowed}'**"})
+                    st.session_state.chat_history.append({"role": "bot", "text": f"⚡ AI 수비: **'{bot_word}'**! 다음 시작어: **'{next_allowed}'**"})
             st.rerun()
 
 # ==========================================
-# 2. 📕 한방 단어 대사전 (100+)
+# 2. 🛒 상점 (확장된 아이템 라인업)
 # ==========================================
-elif menu == "📕 한방 단어 대사전 (100+)":
-    st.title("📕 한방 단어 필살기 대사전 (100+)")
-    st.caption("실전에서 상대를 즉시 제압할 수 있는 검증된 표준 명사 데이터베이스입니다.")
+elif menu == "🛒 상점":
+    st.title("🛒 아이템 상점")
+    st.caption("획득한 포인트로 마음에 드는 스타일과 칭호를 구매해 보세요!")
 
-    search_k = st.text_input("🔍 사전 내부 검색:", "")
+    shop_data = {
+        "🏷️ 칭호": [
+            ("🎖️ 신병", 0), ("🔥 끝말잇기 제왕", 200), ("⚡ 빛의 속도", 300), 
+            ("🎓 국어대학사", 500), ("💎 챌린저 1위", 800), ("👑 전설의 창시자", 1200)
+        ],
+        "🎨 배경 테마": [
+            ("🔴 레드 테마", 0), ("🟢 네온 시안", 300), ("🟡 챌린저 골드", 500), 
+            ("🟣 퍼플 보이드", 700), ("🌸 사쿠라 핑크", 900), ("🌊 다크 오션", 1000)
+        ],
+        "🖼️ 테두리 프레임": [
+            ("기본 프레임", 0), ("🔴 강렬한 레드 테두리", 200), ("🟢 빛나는 네온 테두리", 400),
+            ("🟡 황금 챔피언 테두리", 600), ("🟣 공허의 아우라 테두리", 800), 
+            ("💎 다이아몬드 테두리", 1000), ("🔥 불꽃 네온 테두리", 1200)
+        ],
+        "👤 아바타": [
+            ("👤 기본 요원", 0), ("🐱 닌자 캣", 200), ("🦊 사막여우", 300), 
+            ("🐉 드래곤 Master", 500), ("👾 사이버 픽셀", 700), ("👑 국왕 펭귄", 1000)
+        ]
+    }
+
+    slot_keys = {
+        "🏷️ 칭호": "equipped_title",
+        "🎨 배경 테마": "equipped_theme",
+        "🖼️ 테두리 프레임": "equipped_frame",
+        "👤 아바타": "equipped_avatar"
+    }
+
+    tabs = st.tabs(list(shop_data.keys()))
+    for idx, (cat_name, item_list) in enumerate(shop_data.items()):
+        slot_key = slot_keys[cat_name]
+        with tabs[idx]:
+            for item_name, price in item_list:
+                st.markdown(f"""
+                <div class="shop-item-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <span style="font-size: 18px; font-weight: bold; color: #ffffff;">{item_name}</span>
+                            <br/><span style="color: #fbbf24; font-size: 14px; font-weight: bold;">가격: {price} P</span>
+                        </div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                c1, c2 = st.columns([4, 1])
+                with c2:
+                    if item_name in st.session_state.inventory:
+                        if st.session_state[slot_key] == item_name:
+                            st.info("장착중")
+                        else:
+                            if st.button("장착하기", key=f"eq_{cat_name}_{item_name}"):
+                                st.session_state[slot_key] = item_name
+                                save_user_data()
+                                st.rerun()
+                    else:
+                        if st.button(f"구매하기 ({price}P)", key=f"buy_{cat_name}_{item_name}"):
+                            if st.session_state.points >= price:
+                                st.session_state.points -= price
+                                st.session_state.inventory.append(item_name)
+                                st.session_state[slot_key] = item_name
+                                save_user_data()
+                                st.rerun()
+                            else:
+                                st.error("포인트 부족!")
+
+# ==========================================
+# 3. 📕 한방 단어 대사전
+# ==========================================
+elif menu == "📕 한방 단어 대사전":
+    st.title("📕 한방 단어 대사전")
+    search_k = st.text_input("🔍 사전 검색:", "")
     if search_k:
         results = [w for w in ALL_KILLER_WORDS if search_k in w]
-        st.write(f"검색 결과 ({len(results)}개):")
         cols = st.columns(4)
         for idx, word in enumerate(results):
             with cols[idx % 4]:
@@ -481,101 +524,32 @@ elif menu == "📕 한방 단어 대사전 (100+)":
         tabs = st.tabs(list(MASSIVE_KILLER_DICTIONARY.keys()))
         for idx, (cat_name, words) in enumerate(MASSIVE_KILLER_DICTIONARY.items()):
             with tabs[idx]:
-                st.write(f"### {cat_name} (총 {len(words)}개)")
                 cols = st.columns(4)
                 for w_idx, word in enumerate(words):
                     with cols[w_idx % 4]:
                         st.markdown(f"<div class='killer-card'>{word}</div>", unsafe_allow_html=True)
 
 # ==========================================
-# 3. 🧪 원소 주기율표 (1~118)
+# 4. 👤 내 프로필
 # ==========================================
-elif menu == "🧪 원소 주기율표 (1~118)":
-    st.title("🧪 원소 주기율표 데이터베이스 (1~118)")
-    search_elem = st.text_input("원소 명칭 또는 기호 검색 (예: H, 수소, Na):", "")
-    
-    filtered = [e for e in ELEMENTS_DATA if search_elem in e[2] or search_elem.lower() in e[1].lower()]
-    cols = st.columns(4)
-    for idx, (num, sym, name, state) in enumerate(filtered):
-        with cols[idx % 4]:
-            is_k = name.endswith(("륨", "늄", "튬", "슘", "뮴"))
-            st.markdown(f"""
-            <div class="elem-card">
-                <span style="font-size: 13px; color: #94a3b8; font-weight: bold;">No.{num} [{state}]</span>
-                <h2 style="margin: 4px 0; color: {cur_theme['accent']}; font-family: 'Orbitron'; font-size: 28px;">{sym}</h2>
-                <span style="font-size: 18px; font-weight: bold; color: #ffffff;">{name}</span>
-                {('<br/><span style="color:#ef4444; font-weight:bold; font-size:12px;">💥 한방단어</span>' if is_k else '')}
-            </div>
-            """, unsafe_allow_html=True)
-
-# ==========================================
-# 4. 🛒 택티컬 상점
-# ==========================================
-elif menu == "🛒 택티컬 상점 (실시간 배경)":
-    st.title("🛒 TACTICAL ITEM SHOP")
-
-    shop_data = {
-        "🎨 전체 UI 테마 배경": [
-            ("🔴 발로란트 레드", 0), ("🟢 래디언트 시안", 300), 
-            ("🟡 챌린저 골드", 500), ("🟣 공허의 아칼리", 700), ("⚔️ 밀리터리 카키", 900)
-        ],
-        "🖼️ 테두리 프레임": [
-            ("기본 프레임", 0), ("🔴 발로란트 레드 테두리", 200), ("🟢 래디언트 네온 테두리", 400),
-            ("🟡 챌린저 테두리", 600), ("🟣 공허 테두리", 800), ("⚔️ 특수부대 테두리", 1000)
-        ],
-        "👤 요원 아바타": [
-            ("👤 기본 요원", 0), ("⚡ 네온 요원", 200), ("🦁 제드 요원", 400),
-            ("🤖 메카 요원", 600), ("👑 섀도우 킹", 1000)
-        ]
-    }
-
-    slot_keys = {
-        "🎨 전체 UI 테마 배경": "equipped_theme",
-        "🖼️ 테두리 프레임": "equipped_frame",
-        "👤 요원 아바타": "equipped_avatar"
-    }
-
-    tabs = st.tabs(list(shop_data.keys()))
-    for idx, (cat_name, item_list) in enumerate(shop_data.items()):
-        slot_key = slot_keys[cat_name]
-        with tabs[idx]:
-            for item_name, price in item_list:
-                c1, c2 = st.columns([3, 1])
-                with c1:
-                    st.write(f"### {item_name}\n가격: **{price} P**")
-                with c2:
-                    if item_name in st.session_state.inventory:
-                        if st.session_state[slot_key] == item_name:
-                            st.info("장착됨")
-                        else:
-                            if st.button("장착하기", key=f"eq_{cat_name}_{item_name}"):
-                                st.session_state[slot_key] = item_name
-                                save_user_data()
-                                st.rerun()
-                    else:
-                        if st.button(f"구매 ({price}P)", key=f"buy_{cat_name}_{item_name}"):
-                            if st.session_state.points >= price:
-                                st.session_state.points -= price
-                                st.session_state.inventory.append(item_name)
-                                save_user_data()
-                                st.rerun()
-                            else:
-                                st.error("포인트 부족!")
-
-# ==========================================
-# 5. 👤 프로필 & 스타일 설정
-# ==========================================
-elif menu == "👤 프로필 & 스타일 설정":
-    st.title("👤 요원 프로필")
+elif menu == "👤 내 프로필":
+    st.title("👤 내 프로필 설정")
     
     avatar_icon = st.session_state.equipped_avatar.split()[0]
     st.markdown(f"""
-    <div style="padding: 30px; border-radius: 10px; border: {cur_frame}; text-align: center; background: #0f172a; margin-top: 15px;">
-        <div style="font-size: 80px;">{avatar_icon}</div>
-        <div style="font-size: 20px; font-weight: bold; color: {cur_theme['accent']}; margin-top: 10px;">[{st.session_state.equipped_title}]</div>
-        <h1 style="margin: 10px 0; font-family: 'Orbitron'; color: #ffffff;">{st.session_state.user_name}</h1>
-        <p style="font-size: 18px; color: #ffffff;">🎨 장착 테마 배경: <b>{st.session_state.equipped_theme}</b></p>
-        <p style="font-size: 18px; color: #ffffff;">🖼️ 장착 테두리: <b>{st.session_state.equipped_frame}</b></p>
-        <p style="font-size: 22px; font-weight: bold; color: #fbbf24;">💰 보유 포인트: {st.session_state.points} P</p>
+    <div style="padding: 24px; border-radius: 12px; border: {cur_frame}; text-align: center; background: #0f172a; margin-top: 15px;">
+        <div style="font-size: 70px;">{avatar_icon}</div>
+        <div style="font-size: 18px; font-weight: bold; color: {cur_theme['accent']}; margin-top: 8px;">[{st.session_state.equipped_title}]</div>
+        <h2 style="margin: 8px 0; color: #ffffff;">{st.session_state.user_name}</h2>
+        <p style="font-size: 15px; color: #ffffff;">🎨 장착 테마: <b>{st.session_state.equipped_theme}</b></p>
+        <p style="font-size: 15px; color: #ffffff;">🖼️ 장착 테두리: <b>{st.session_state.equipped_frame}</b></p>
+        <p style="font-size: 20px; font-weight: bold; color: #fbbf24;">💰 보유 포인트: {st.session_state.points} P</p>
     </div>
     """, unsafe_allow_html=True)
+
+    new_name = st.text_input("닉네임 변경:", value=st.session_state.user_name)
+    if st.button("닉네임 저장"):
+        st.session_state.user_name = new_name
+        save_user_data()
+        st.success("변경되었습니다!")
+        st.rerun()
