@@ -3,6 +3,7 @@ import requests
 import random
 import json
 import os
+import re
 
 st.set_page_config(page_title="끝말잇기 PRO MAX", page_icon="⚔️", layout="wide")
 
@@ -248,9 +249,10 @@ def get_allowed_initials(char):
     return list(dict.fromkeys(allowed))
 
 # ==========================================
-# 📕 초대형 내장 표준 명사 DB
+# 📕 대용량 내장 표준 명사 DB ('이' 계열 필두 대폭 확충)
 # ==========================================
 MEGA_FALLBACK_DICTIONARY = {
+    "이": ["이빨", "이마", "이슬", "이름", "이모", "이웃", "이불", "이야기", "이발소", "이유", "이메일", "이탈리아", "이동", "이발기", "이구아나", "이모티콘", "이력서", "이파리", "이슬비", "이등병", "이사회", "이용", "이월", "이장", "이모부", "이문", "이앙기"],
     "가": ["가방", "가수", "가구", "가을", "가족", "가시", "가면", "가자미", "가라오케", "가장복", "가로수", "가공품", "가위", "가게", "가격", "가축", "가뭄", "가죽", "가슴", "가위바위보"],
     "나": ["나비", "나무", "나팔", "나침반", "나이테", "나물", "나그네", "나방", "나들이", "나이프", "나일론", "나흘", "나트륨", "나뭇잎", "나비넥타이"],
     "다": ["다람쥐", "다리", "다리미", "다이아몬드", "다이빙", "다짐", "다큐멘터리", "다시마", "다문화", "다용도", "다락방", "다이어트", "다이아", "다소소"],
@@ -269,7 +271,6 @@ MEGA_FALLBACK_DICTIONARY = {
     "연": ["연필", "연극", "연못", "연기", "연꽃", "연쇄", "연료", "연습", "연속", "연말", "연어", "연두색", "연하장", "연예인", "연극열전"],
     "표": ["표정", "표지판", "표범", "표준", "표적", "표류", "표면", "표현", "표제어", "표인", "표목", "표식"],
     "리": ["리본", "리듬", "리코더", "리모컨", "리조트", "리갈", "리액션", "리필", "리얼리티", "리허설", "리프트", "리프레시"],
-    "이": ["이야기", "이발소", "이유", "이불", "이웃", "이메일", "이탈리아", "이동", "이발기", "이구아나", "이모티콘", "이력서"],
     "기": ["기차", "기린", "기타", "기와", "기구", "기사", "기름", "기적", "기업", "기계", "기후", "기억", "기타리스트", "기상청"],
     "구": ["구름", "구두", "구슬", "구경", "구조대", "구역", "구경꾼", "구식", "구급차", "구마유시", "구기종목", "구운계란"],
     "음": ["음악", "음식", "음료수", "음성", "음향", "음자리표", "음반", "음원", "음표", "음식점", "음악가"],
@@ -331,11 +332,11 @@ ELEMENTS_DATA = [
 ELEMENT_NAMES = [e[2] for e in ELEMENTS_DATA]
 
 # ==========================================
-# 🔍 캐싱된 네이버 API 조회 (속도 및 차단 방지)
+# 🔍 캐싱된 네이버 API 조회
 # ==========================================
 @st.cache_data(ttl=3600, show_spinner=False)
 def safe_naver_search(query):
-    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
     url = f"https://dict.naver.com/api/search/autocomplete?query={query}&st=11111"
     try:
         res = requests.get(url, headers=headers, timeout=1.5)
@@ -346,7 +347,7 @@ def safe_naver_search(query):
     return None
 
 # ==========================================
-# 💥 정교한 단어 검증 시스템 (API + DB 이중 검증)
+# 💥 [수정완료] 정교한 단어 검증 (정규식 청소 적용)
 # ==========================================
 def is_valid_korean_word(word):
     if len(word) < 2 or not word.isalpha():
@@ -361,13 +362,14 @@ def is_valid_korean_word(word):
     if first_char in MEGA_FALLBACK_DICTIONARY and word in MEGA_FALLBACK_DICTIONARY[first_char]:
         return True
 
-    # 3. 네이버 국어사전 API 2차 검수
+    # 3. 네이버 국어사전 API 2차 검수 (숫자/특수기호 제거 정규식 청소)
     res_json = safe_naver_search(word)
     if res_json:
         for group in res_json.get("items", []):
             for item in group:
-                dict_word = item[0][0].strip()
-                if dict_word == word:
+                raw_word = item[0][0] if (item and len(item) > 0 and len(item[0]) > 0) else ""
+                clean_word = re.sub(r'[0-9\s^<>[\]\(\)]', '', raw_word)
+                if clean_word == word or raw_word.strip() == word:
                     return True
 
     return False
@@ -384,7 +386,8 @@ def get_bot_response_word(start_chars, used_words, difficulty):
         if res_json:
             for group in res_json.get("items", []):
                 for item in group:
-                    w = item[0][0].strip()
+                    raw_w = item[0][0] if (item and len(item) > 0 and len(item[0]) > 0) else ""
+                    w = re.sub(r'[0-9\s^<>[\]\(\)]', '', raw_w)
                     if len(w) >= 2 and w.isalpha() and w[0] in start_chars and w not in clean_used:
                         candidates.append(w)
 
@@ -420,7 +423,7 @@ def get_bot_response_word(start_chars, used_words, difficulty):
     return random.choice(candidates)
 
 STARTING_WORDS = [
-    "라면", "바다", "하늘", "구름", "기차", "자전거", "호랑이", "비행기", "사과", "기름",
+    "호랑이", "라면", "바다", "하늘", "구름", "기차", "자전거", "비행기", "사과", "기름",
     "나비", "다람쥐", "라디오", "마술", "바나나", "사자", "아카시아", "자두", "차표", "카메라",
     "타이어", "파도", "하마", "이야기", "구슬", "스케이트", "지우개", "초콜릿", "풍선", "상자"
 ]
